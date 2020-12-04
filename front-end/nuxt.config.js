@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
+import fs from 'fs'
 
 export default {
   // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
@@ -6,6 +7,10 @@ export default {
 
   // Target (https://go.nuxtjs.dev/config-target)
   target: 'static',
+
+  generate: {
+    dir: '../back-end/public'
+  },
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
@@ -70,5 +75,17 @@ export default {
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
+  },
+
+  hooks: {
+    generate: {
+      done(generator, errors) {
+        // After generating, copy all files from public-base to public.
+        const files = fs.readdirSync(__dirname + '/../back-end/public-base/');
+        files.forEach((file)  => {
+          fs.copyFileSync('../back-end/public-base/' + file, '../back-end/public/' + file)
+        })
+      }
+    }
   }
 }
