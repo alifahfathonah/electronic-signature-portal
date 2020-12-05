@@ -8,6 +8,7 @@
         <v-card-text>
           Select files
           <v-file-input
+            multiple
           ></v-file-input>
           <h3>Access control</h3>
           <p>Who can sign this document?</p>

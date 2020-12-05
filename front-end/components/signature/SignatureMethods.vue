@@ -4,12 +4,12 @@
       <h3>Add you signature now!</h3>
       <p>Select signing method:</p>
       <v-row>
-        <id-card-signature></id-card-signature>
-        <mobile-id-signature></mobile-id-signature>
+        <id-card-signature @beginSigning="signWithSmartId"></id-card-signature>
+        <mobile-id-signature @beginSigning="signWithSmartId"></mobile-id-signature>
       </v-row>
       <v-row>
-        <smart-id-signature></smart-id-signature>
-        <zeal-id-signature></zeal-id-signature>
+        <smart-id-signature @beginSigning="signWithSmartId"></smart-id-signature>
+        <zeal-id-signature @beginSigning="signWithSmartId"></zeal-id-signature>
       </v-row>
     </v-col>
   </v-row>
@@ -22,7 +22,12 @@ import SmartIdSignature from '@/components/signature/SmartIdSignature'
 import ZealIdSignature from '@/components/signature/ZealIdSignature'
 export default {
   name: 'SignatureMethods',
-  components: { ZealIdSignature, SmartIdSignature, IdCardSignature, MobileIdSignature }
+  components: { ZealIdSignature, SmartIdSignature, IdCardSignature, MobileIdSignature },
+  methods: {
+    signWithSmartId () {
+      return this.$emit('signWithSmartId')
+    }
+  }
 }
 </script>
 

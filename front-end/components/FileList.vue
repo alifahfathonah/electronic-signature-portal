@@ -8,7 +8,7 @@
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title>very_important_contract.pdf</v-list-item-title>
-          <v-list-item-subtitle>125kb</v-list-item-subtitle>
+          <v-list-item-subtitle>208 KB</v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action>
           <v-btn icon>
@@ -22,7 +22,7 @@
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title>annex_1.pdf</v-list-item-title>
-          <v-list-item-subtitle>311kb</v-list-item-subtitle>
+          <v-list-item-subtitle>170 KB</v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action>
           <v-btn icon>
