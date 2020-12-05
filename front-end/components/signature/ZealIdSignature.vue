@@ -1,5 +1,7 @@
 <template>
-  <v-col>ZealID</v-col>
+  <v-col>
+    <img src="/methods/zealid.svg" class="method-height" onclick="alert('Coming soon')">
+  </v-col>
 </template>
 
 <script>

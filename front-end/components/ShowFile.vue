@@ -1,6 +1,6 @@
 <template>
   <div>
-    I am the file
+    I am the file content
   </div>
 </template>
 

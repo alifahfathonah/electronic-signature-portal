@@ -1,7 +1,6 @@
 <template>
   <v-col>
-    <v-img src="/methods/eid_mobiili_mark.png"></v-img>
-    Mobile-ID
+    <img src="/methods/eid_mobiilid_mark.png" class="method-height">
   </v-col>
 </template>
 

@@ -1,5 +1,7 @@
 <template>
-<v-col>Smart-ID</v-col>
+  <v-col>
+    <img src="/methods/Smart-ID_login_btn.png" class="method-height">
+  </v-col>
 </template>
 
 <script>

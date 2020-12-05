@@ -1,5 +1,7 @@
 <template>
-  <v-col></v-col>
+  <v-col>
+    <img src="/methods/eid_idkaart_mark.png" class="method-height">
+  </v-col>
 </template>
 
 <script>
