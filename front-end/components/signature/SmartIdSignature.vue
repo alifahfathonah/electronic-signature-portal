@@ -1,6 +1,8 @@
 <template>
   <v-col>
-    <img src="/methods/Smart-ID_login_btn.png" class="method-height">
+    <v-btn block class="signing-method-btn"  elevation="1">
+      <img src="/methods/smart-id.svg" class="method-height signing-method-btn-img">
+    </v-btn>
   </v-col>
 </template>
 

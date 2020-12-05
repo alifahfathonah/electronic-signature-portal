@@ -122,7 +122,7 @@
           <v-btn
             color="primary"
             nuxt
-            to="/create-document"
+            to="/signature/create-document"
           >
             Save!
           </v-btn>
