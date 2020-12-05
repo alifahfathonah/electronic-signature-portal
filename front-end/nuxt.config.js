@@ -1,5 +1,6 @@
-import colors from 'vuetify/es5/util/colors'
 import fs from 'fs'
+// eslint-disable-next-line no-unused-vars
+import colors from 'vuetify/es5/util/colors'
 
 export default {
   // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
@@ -32,28 +33,33 @@ export default {
   ],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-  plugins: [
-  ],
+  plugins: [],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: true,
 
-  // Modules for dev and build (recommended) (https://go.nuxtjs.dev/config-modules)
+  // Modules for dev and build (recommended)
+  // (https://go.nuxtjs.dev/config-modules)
   buildModules: [
     // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/vuetify
-    '@nuxtjs/vuetify',
+    '@nuxtjs/vuetify'
   ],
 
   // Modules (https://go.nuxtjs.dev/config-modules)
   modules: [
     // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios',
+    '@nuxtjs/axios'
   ],
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
-  axios: {},
+  axios: {
+    // proxy: true
+  },
+  // proxy: {
+  //   '/api/': { target: 'http://localhost:8080/api' }
+  // },
 
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
   vuetify: {
@@ -61,16 +67,17 @@ export default {
   },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
-  build: {
-  },
+  build: {},
 
   hooks: {
     generate: {
-      done(generator, errors) {
+      done (generator, errors) {
         // After generating, copy all files from public-base to public.
-        const files = fs.readdirSync(__dirname + '/../back-end/public-base/');
-        files.forEach((file)  => {
-          fs.copyFileSync('../back-end/public-base/' + file, '../back-end/public/' + file)
+        // eslint-disable-next-line no-path-concat
+        const files = fs.readdirSync(__dirname + '/../back-end/public-base/')
+        files.forEach((file) => {
+          fs.copyFileSync('../back-end/public-base/' + file,
+            '../back-end/public/' + file)
         })
       }
     }

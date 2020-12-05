@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/api/get-files/{file-id}', 'SignatureController@getFiles');
 
 // Serve index.html.
 Route::fallback(function ($route = '') {
