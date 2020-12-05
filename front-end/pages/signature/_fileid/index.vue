@@ -7,6 +7,18 @@
         </v-card-title>
         <v-card-subtitle>Created on 01.12.2020 by Bilbo Baggins.</v-card-subtitle>
         <v-card-text>
+          <p>Document link: <a href="#">https://signing.yousite.com/signature/28hqjUASd2a9S</a>
+            <v-btn
+            fab
+            small
+            elevation="1"
+          >
+            <v-icon>
+              mdi-content-copy
+            </v-icon>
+          </v-btn>
+            <br>
+            Share this link with anyone who you wish to sign this document.</p>
           <file-list></file-list>
           <signature-methods></signature-methods>
           <signee-list></signee-list>

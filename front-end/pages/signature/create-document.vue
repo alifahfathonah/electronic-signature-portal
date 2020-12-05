@@ -74,7 +74,7 @@
           <v-btn
             color="primary"
             nuxt
-            to="/admin/config"
+            to="/signature/28hqjUASd2a9S"
           >
             Save!
           </v-btn>
