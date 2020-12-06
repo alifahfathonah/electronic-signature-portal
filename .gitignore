@@ -6,3 +6,5 @@
 
 # Vim swap files
 *.swp
+
+.laradock

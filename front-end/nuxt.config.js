@@ -41,9 +41,7 @@ export default {
   // Modules for dev and build (recommended)
   // (https://go.nuxtjs.dev/config-modules)
   buildModules: [
-    // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
-    // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify'
   ],
 
@@ -56,6 +54,7 @@ export default {
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
     // proxy: true
+    baseURL: process.env.BASE_URL
   },
   // proxy: {
   //   '/api/': { target: 'http://localhost:8080/api' }

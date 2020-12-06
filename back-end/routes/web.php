@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\CompanyController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +16,24 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 */
 Route::get('/api/get-files/{file-id}', 'SignatureController@getFiles');
 
-// Serve index.html.
+Route::prefix('api')->group(function () {
+    Route::prefix('company')->group(function () {
+        Route::get('check-slug-availability', [CompanyController::class, 'checkUrlSlug']);
+    });
+
+    Route::prefix('authenticate')->group(function () {
+        Route::post('smart-id/start', 'EmbeddedIdentityController@startSmartidLogin');
+        Route::post('smart-id/finish', 'EmbeddedIdentityController@finishSmartidLogin');
+
+        Route::post('mobile-id/start', 'EmbeddedIdentityController@startMobileidLogin');
+        Route::post('mobile-id/finish', 'EmbeddedIdentityController@finishMobileidLogin');
+
+        Route::post('id-card', 'EmbeddedIdentityController@idcardLogin');
+    });
+});
+
+// This part should always be last in web.php.
 Route::fallback(function ($route = '') {
+    // Serve index.html.
     return File::get(public_path('/index.html'));
 });

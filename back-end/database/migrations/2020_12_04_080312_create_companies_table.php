@@ -15,11 +15,10 @@ class CreateCompaniesTable extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('subdomain');
+            $table->string('url_slug');
             $table->string('eid_client_id')->nullable();
             $table->string('eid_secret')->nullable();
             $table->string('logo_path')->nullable();
-            $table->string('active_methods');
             $table->timestamps();
         });
     }

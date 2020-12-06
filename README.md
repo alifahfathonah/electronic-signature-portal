@@ -9,7 +9,7 @@ Self-hosted electronic signature portal:
 This project uses the eID Easy API to simplify the generation of Qualified Electronic Signatures - the highest grade of electronic signatures.
 
 ## This is initial preview
-This project was developed in Garage48 and as of this moment is not fully tested and not fully complete yet. If you are interested in getting notified when stable version is ready then write to info@eideasy.com
+This project was developed in Garage48 and as of this moment is not fully tested and not fully complete yet. If you are interested in getting notified when stable version is ready then write to info@eideasy.com.
 
 ## Developer workflow
 Wish to make changes to the codebase? There are several ways to set this project up on your dev environment. Here's the easiest one.
@@ -25,8 +25,16 @@ To set up the front-end
 ```
 cd front-end
 npm i
-NUXT_ENV_BROWSER_BASE_URL=localhost:8000 npm run dev
+npm run dev
 ```
+
+If you wish the back-end to be run on a different domain, add a .env file to `/front-end`:
+```
+BASE_URL=http://your-backend.dev/
+```
+
+Make sure to re-run `npm run dev` after updating the .env file.
+
 This assumes that `artisan serve` sets your back-end up at `localhost:8000`.
 
 To build the front-end for production
