@@ -8,6 +8,9 @@ Self-hosted electronic signature portal:
 
 This project uses the eID Easy API to simplify the generation of Qualified Electronic Signatures - the highest grade of electronic signatures.
 
+## This is initial preview
+This project was developed in Garage48 and as of this moment is not fully tested and not fully complete yet. If you are interested in getting notified when stable version is ready then write to info@eideasy.com
+
 ## Developer workflow
 Wish to make changes to the codebase? There are several ways to set this project up on your dev environment. Here's the easiest one.
 
