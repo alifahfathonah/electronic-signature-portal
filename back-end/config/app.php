@@ -2,6 +2,8 @@
 
 return [
 
+    'bypass-csrf' => env('BYPASS_CSRF', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

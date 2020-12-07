@@ -8,7 +8,7 @@
     <v-card-text>
 
       <!-- Show login methods -->
-      <login-method-list v-if="!method"></login-method-list>
+      <login-method-list v-if="!method" @selectMethod="selectMethod"></login-method-list>
 
       <!-- Show ID card tip -->
       <template v-if="method === 'id-card'">
@@ -21,18 +21,21 @@
           v-model="idCode"
           label="Identity Code"
           :disabled="disable"
+          :error-messages="$store.state.ui.validationErrors['idcode']"
         ></v-text-field>
         <v-text-field
           v-if="method === 'mobile-id'"
           v-model="phone"
           label="Phone number"
           :disabled="disable"
+          :error-messages="$store.state.ui.validationErrors['phone']"
         ></v-text-field>
         <v-select
           v-model="country"
           :items="countrySelect"
           label="Country"
           :disabled="disable"
+          :error-messages="$store.state.ui.validationErrors['country']"
         ></v-select>
       </template>
 
@@ -104,12 +107,16 @@ export default {
   watch: {
     isOpen (isOpen) {
       if (!isOpen) {
-        this.method = null
-        this.challenge = null
+        this.reset()
       }
     }
   },
   methods: {
+    reset () {
+      this.method = null
+      this.challenge = null
+      this.token = null
+    },
     async selectMethod (method) {
       this.method = method
       // With ID card, we will begin login process. With other
@@ -119,34 +126,34 @@ export default {
       }
     },
     async beginTwoStepLogin () {
-      const response = await this.$axios.post(`api/authenticate/${this.method}/start`, {
-        body: {
+      let response = null
+
+      try {
+        response = await this.$axios.post(`api/authenticate/${this.method}/start`, {
           idcode: this.idCode,
           phone: this.method === 'mobile-id' ? this.phone : undefined,
           country: this.country
-        }
-      })
+        })
+      } catch (e) {
+        return
+      }
 
       this.challenge = response.data.challenge
       this.token = response.data.token
 
-      const ticker = setInterval(async () => {
-        try {
-          const response = await this.$axios.post(`api/authenticate/${this.method}/finish`, {
-            body: {
-              token: this.token
-            }
-          })
+      try {
+        const response = await this.$axios.post(`api/authenticate/${this.method}/finish`, {
+          token: this.token
+        })
 
-          if (response.data.status === 'OK') {
-            clearInterval(ticker)
-            alert('LOGGED IN!')
-          }
-        } catch (e) {
-          // TODO handle errors
-          console.error(e)
+        if (response.data.status === 'OK') {
+          alert('LOGGED IN!')
+        } else {
+          alert(response.data.status)
         }
-      })
+      } catch (e) {
+        this.reset()
+      }
     }
   }
 }

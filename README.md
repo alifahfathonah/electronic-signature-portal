@@ -35,7 +35,7 @@ BASE_URL=http://your-backend.dev/
 
 Make sure to re-run `npm run dev` after updating the .env file.
 
-This assumes that `artisan serve` sets your back-end up at `localhost:8000`.
+When using `npm run dev`, you must set `BYPASS_CSRF=true` in `back-end/.env`.
 
 To build the front-end for production
 ```

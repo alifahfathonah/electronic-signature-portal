@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\EmbeddedIdentityController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
@@ -22,18 +23,21 @@ Route::prefix('api')->group(function () {
     });
 
     Route::prefix('authenticate')->group(function () {
-        Route::post('smart-id/start', 'EmbeddedIdentityController@startSmartidLogin');
-        Route::post('smart-id/finish', 'EmbeddedIdentityController@finishSmartidLogin');
+        Route::post('smart-id/start', [EmbeddedIdentityController::class, 'startSmartidLogin']);
+        Route::post('smart-id/finish', [EmbeddedIdentityController::class, 'finishSmartidLogin']);
 
-        Route::post('mobile-id/start', 'EmbeddedIdentityController@startMobileidLogin');
-        Route::post('mobile-id/finish', 'EmbeddedIdentityController@finishMobileidLogin');
+        Route::post('mobile-id/start', [EmbeddedIdentityController::class, 'startMobileidLogin']);
+        Route::post('mobile-id/finish', [EmbeddedIdentityController::class, 'finishMobileidLogin']);
 
-        Route::post('id-card', 'EmbeddedIdentityController@idcardLogin');
+        Route::post('id-card', [EmbeddedIdentityController::class, 'idcardLogin']);
     });
 });
 
 // This part should always be last in web.php.
 Route::fallback(function ($route = '') {
     // Serve index.html.
-    return File::get(public_path('/index.html'));
+    $csrf = csrf_token();
+    $html = File::get(public_path('/index.html'));
+    $html = str_replace('<body>', "<body><script>window.CSRF_TOKEN = '$csrf'</script>", $html);
+    return $html;
 });
