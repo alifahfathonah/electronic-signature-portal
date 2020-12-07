@@ -14,14 +14,18 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/api/get-files/{file-id}', 'SignatureController@getFiles');
-
 Route::prefix('api')->group(function () {
     Route::prefix('company')->group(function () {
         Route::get('check-slug-availability', [CompanyController::class, 'checkUrlSlug']);
     });
 
+    Route::get('get-files/{file-id}', 'FilesController@getFiles');
+    Route::post('signatures/get-idcard-token', 'SignatureController@getIdcardToken');
+    Route::post('signatures/get-signature-digest', 'SignatureController@getSignatureDigest');
+    Route::post('signatures/finish-signature', 'SignatureController@finishSignature');
+
     Route::prefix('authenticate')->group(function () {
+
         Route::post('smart-id/start', 'EmbeddedIdentityController@startSmartidLogin');
         Route::post('smart-id/finish', 'EmbeddedIdentityController@finishSmartidLogin');
 
