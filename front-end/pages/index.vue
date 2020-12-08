@@ -10,9 +10,10 @@
           <p>It's a pleasure to give in to temptations when these temptations actually make your life better. That's what we do here.</p>
           <p>Give in to the temptation, join the forces of freedom. You can have it all - legally binding signatures AND control over your data.</p>
           <v-text-field
-            class="input-align-right"
+            v-model="slug"
             placeholder="your-company-name"
-            suffix=".portal.eideasy.com"
+            :prefix="origin"
+            :error-messages="$store.state.ui.validationErrors['slug']"
           />
         </v-card-text>
         <v-card-actions>
@@ -20,18 +21,75 @@
           <v-btn
             color="primary"
             nuxt
-            to="/admin/config"
+            :disabled="creatingCompany"
+            @click="checkSlug"
           >
-            Let's go!
+            <template v-if="!creatingCompany">
+              Create your company!
+            </template>
+            <template v-else>
+              Creating company...
+            </template>
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-col>
+    <v-dialog
+      v-model="showLoginDialog"
+      persistent
+      max-width="400"
+      :fullscreen="$vuetify.breakpoint.xsOnly"
+    >
+      <login-dialog-content @loggedIn="loggedIn"/>
+    </v-dialog>
   </v-row>
 </template>
 
-<style>
-.input-align-right input {
-  text-align: right;
+<script>
+import LoginDialogContent from '@/components/login/LoginDialogContent'
+
+export default {
+  components: { LoginDialogContent },
+  data: () => ({
+    slug: '',
+    showLoginDialog: false,
+    origin: window.location.origin + '/',
+    creatingCompany: false
+  }),
+  methods: {
+    async checkSlug () {
+      try {
+        // If no validation errors are returned then this slug is available.
+        await this.$axios.get('api/company/check-slug-availability', {
+          params: {
+            slug: this.slug
+          }
+        })
+      } catch (e) {
+        // If slug is taken, validation error is thrown and we return.
+        return
+      }
+
+      // If we are logged in, attempt to register slug.
+      if (this.$store.state.user.me) {
+        this.createCompany()
+      } else {
+        this.showLoginDialog = true
+      }
+    },
+    loggedIn () {
+      this.showLoginDialog = false
+      this.createCompany()
+    },
+    async createCompany () {
+      this.creatingCompany = true
+
+      const response = await this.$axios.post('api/company/', {
+        slug: this.slug
+      })
+
+      this.$router.push(`company/${response.data.company.id}/config`)
+    }
+  }
 }
-</style>
+</script>

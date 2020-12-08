@@ -33,7 +33,11 @@ export default {
   ],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-  plugins: [],
+  plugins: [
+    '~/plugins/snackbar.js',
+    '~/plugins/axios-errors.js',
+    '~/plugins/load-identity.js'
+  ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: true,
@@ -41,25 +45,20 @@ export default {
   // Modules for dev and build (recommended)
   // (https://go.nuxtjs.dev/config-modules)
   buildModules: [
-    // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
-    // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify'
   ],
 
   // Modules (https://go.nuxtjs.dev/config-modules)
   modules: [
-    // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios'
   ],
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
-    // proxy: true
+    baseURL: process.env.BASE_URL,
+    credentials: true
   },
-  // proxy: {
-  //   '/api/': { target: 'http://localhost:8080/api' }
-  // },
 
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
   vuetify: {

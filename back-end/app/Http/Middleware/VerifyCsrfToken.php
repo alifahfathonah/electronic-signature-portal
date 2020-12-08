@@ -14,4 +14,12 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         //
     ];
+
+    /**
+     * Consider that tokens match when we are in development env.
+     * */
+    protected function tokensMatch($request)
+    {
+        return parent::tokensMatch($request);
+    }
 }
