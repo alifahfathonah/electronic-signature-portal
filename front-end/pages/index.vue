@@ -88,7 +88,7 @@ export default {
         slug: this.slug
       })
 
-      this.$router.push(`admin/${response.data.company.id}/config`)
+      this.$router.push(`company/${response.data.company.id}/config`)
     }
   }
 }

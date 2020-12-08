@@ -22,6 +22,10 @@ Route::prefix('api')->group(function () {
     Route::prefix('company')->group(function () {
         Route::post('/', [CompanyController::class, 'store'])->middleware(['auth']);
         Route::get('check-slug-availability', [CompanyController::class, 'checkUrlSlug']);
+
+        Route::prefix('{company_id}')->group(function () {
+            Route::put('/', [CompanyController::class, 'update'])->middleware(['company.admin']);
+        });
     });
 
     Route::prefix('authenticate')->group(function () {

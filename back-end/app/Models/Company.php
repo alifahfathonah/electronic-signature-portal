@@ -16,6 +16,8 @@ class Company extends Model
 
     protected $fillable = [
         'url_slug',
+        'eid_client_id',
+        'eid_secret',
     ];
 
     public function users()

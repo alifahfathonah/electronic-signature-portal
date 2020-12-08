@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Company\CreateNewCompanyRequest;
+use App\Http\Requests\Company\UpdateCompanyRequest;
+use App\Http\Resources\CompanyResource;
 use App\Models\Company;
 use App\Models\User;
+use App\Services\CompanyService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -35,6 +38,20 @@ class CompanyController extends Controller
 
         return response([
             'company' => $company,
+        ]);
+    }
+
+    public function update(UpdateCompanyRequest $request)
+    {
+        $companyService = app(CompanyService::class);
+
+        $company = Company::findOrFail($request->route('company_id'));
+        $company->update($request->all());
+
+        $companies = $companyService->getUserCompanies(Auth::id());
+
+        return response([
+            'companies' => CompanyResource::collection($companies),
         ]);
     }
 }

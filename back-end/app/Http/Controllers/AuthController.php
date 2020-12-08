@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Login\FinishTwoStepLoginRequest;
 use App\Http\Requests\Login\SmartIdLoginRequest;
+use App\Http\Resources\CompanyResource;
 use App\Models\User;
+use App\Services\CompanyService;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
@@ -17,8 +19,12 @@ class AuthController extends Controller
 {
     public function whoAmI()
     {
+        $companyService = app(CompanyService::class);
+        $companies = Auth::check() ? $companyService->getUserCompanies(Auth::id()) : collect([]);
+
         return response()->json([
             'user' => Auth::user(),
+            'companies' => CompanyResource::collection($companies),
         ]);
     }
 
@@ -199,6 +205,9 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return response(['status' => 'OK', 'user' => $user]);
+        $companyService = app(CompanyService::class);
+        $companies = $companyService->getUserCompanies($user->id);
+
+        return response(['status' => 'OK', 'user' => $user, 'companies' => CompanyResource::collection($companies)]);
     }
 }
