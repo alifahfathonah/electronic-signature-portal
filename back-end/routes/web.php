@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
@@ -16,7 +18,12 @@ use Illuminate\Support\Facades\Route;
 */
 Route::prefix('api')->group(function () {
     Route::prefix('company')->group(function () {
+        Route::post('/', [CompanyController::class, 'store'])->middleware(['auth']);
         Route::get('check-slug-availability', [CompanyController::class, 'checkUrlSlug']);
+
+        Route::prefix('{company_id}')->group(function () {
+            Route::put('/', [CompanyController::class, 'update'])->middleware(['company.admin']);
+        });
     });
 
     Route::get('get-files/{file-id}', 'FilesController@getFiles');
@@ -25,14 +32,15 @@ Route::prefix('api')->group(function () {
     Route::post('signatures/finish-signature', 'SignatureController@finishSignature');
 
     Route::prefix('authenticate')->group(function () {
+        Route::get('who-am-i', [AuthController::class, 'whoAmI']);
 
-        Route::post('smart-id/start', 'EmbeddedIdentityController@startSmartidLogin');
-        Route::post('smart-id/finish', 'EmbeddedIdentityController@finishSmartidLogin');
+        Route::post('smart-id/start', [AuthController::class, 'startSmartidLogin']);
+        Route::post('smart-id/finish', [AuthController::class, 'finishSmartidLogin']);
 
-        Route::post('mobile-id/start', 'EmbeddedIdentityController@startMobileidLogin');
-        Route::post('mobile-id/finish', 'EmbeddedIdentityController@finishMobileidLogin');
+        Route::post('mobile-id/start', [AuthController::class, 'startMobileidLogin']);
+        Route::post('mobile-id/finish', [AuthController::class, 'finishMobileidLogin']);
 
-        Route::post('id-card', 'EmbeddedIdentityController@idcardLogin');
+        Route::post('id-card', [AuthController::class, 'idcardLogin']);
     });
 });
 

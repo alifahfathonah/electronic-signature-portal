@@ -2,16 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Login\FinishTwoStepLogin;
+use App\Http\Requests\Login\FinishTwoStepLoginRequest;
 use App\Http\Requests\Login\SmartIdLoginRequest;
+use App\Http\Resources\CompanyResource;
+use App\Models\User;
+use App\Services\CompanyService;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class EmbeddedIdentityController extends Controller
+class AuthController extends Controller
 {
+    public function whoAmI()
+    {
+        $companyService = app(CompanyService::class);
+        $companies = Auth::check() ? $companyService->getUserCompanies(Auth::id()) : collect([]);
+
+        return response()->json([
+            'user' => Auth::user(),
+            'companies' => CompanyResource::collection($companies),
+        ]);
+    }
+
     public function startMobileidLogin(Request $request, Client $client)
     {
         try {
@@ -45,7 +61,7 @@ class EmbeddedIdentityController extends Controller
         ]);
     }
 
-    public function finishMobileidLogin(FinishTwoStepLogin $request, Client $client)
+    public function finishMobileidLogin(FinishTwoStepLoginRequest $request, Client $client)
     {
         try {
             $url      = config('eid-easy.api-url') . "/api/identity/" . config('eid-easy.client-id') . "/mobile-id/complete";
@@ -76,7 +92,12 @@ class EmbeddedIdentityController extends Controller
             ], 400);
         }
 
-        return response()->json($responseData);
+        return $this->authenticate(
+            $responseData->idcode,
+            $responseData->firstname ?? null,
+            $responseData->lastname ?? null,
+            $responseData->country ?? null,
+        );
     }
 
     public function startSmartIdLogin(SmartIdLoginRequest $request, Client $client)
@@ -112,7 +133,7 @@ class EmbeddedIdentityController extends Controller
         ]);
     }
 
-    public function finishSmartIdLogin(FinishTwoStepLogin $request, Client $client)
+    public function finishSmartIdLogin(FinishTwoStepLoginRequest $request, Client $client)
     {
         try {
             $url      = config('eid-easy.api-url') . "/api/identity/" . config('eid-easy.client-id') . "/smart-id/complete";
@@ -139,7 +160,12 @@ class EmbeddedIdentityController extends Controller
         $responseData = json_decode((string)$response->getBody());
         unset($responseData->email);
 
-        return response()->json($responseData);
+        return $this->authenticate(
+            $responseData->idcode,
+            $responseData->firstname ?? null,
+            $responseData->lastname ?? null,
+            $responseData->country ?? null,
+        );
     }
 
     public function idCardLogin(Request $request)
@@ -158,6 +184,30 @@ class EmbeddedIdentityController extends Controller
             'lang'    => $data['lang'] ?? 'en',
         ]);
 
-        return response()->json($response->json(), $response->status());
+        $responseData = json_decode((string)$response->getBody());
+
+        return $this->authenticate(
+            $responseData->idcode,
+            $responseData->firstname ?? null,
+            $responseData->lastname ?? null,
+            $responseData->country ?? null,
+        );
+    }
+
+    private function authenticate(string $idcode, ?string $firstName, ?string $lastName, ?string $country): Response
+    {
+        $user = User::firstOrNew(['idcode' => $idcode]);
+        $user->idcode = $idcode;
+        $user->first_name = $firstName ?: $user->first_name;
+        $user->last_name = $lastName ?: $user->last_name;
+        $user->country = $country ?: $user->country;
+        $user->save();
+
+        Auth::login($user);
+
+        $companyService = app(CompanyService::class);
+        $companies = $companyService->getUserCompanies($user->id);
+
+        return response(['status' => 'OK', 'user' => $user, 'companies' => CompanyResource::collection($companies)]);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests\Login;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FinishTwoStepLogin extends FormRequest
+class FinishTwoStepLoginRequest extends FormRequest
 {
     public function authorize()
     {

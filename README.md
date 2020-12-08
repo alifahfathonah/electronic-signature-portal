@@ -16,6 +16,9 @@ Wish to make changes to the codebase? There are several ways to set this project
 
 To set up the back-end:
 ```
+0.0.0.0         signing-portal.dev
+0.0.0.0         front.signing-portal.dev
+
 cd back-end
 composer install
 php artisan serve
@@ -35,7 +38,7 @@ BASE_URL=http://your-backend.dev/
 
 Make sure to re-run `npm run dev` after updating the .env file.
 
-This assumes that `artisan serve` sets your back-end up at `localhost:8000`.
+When using `npm run dev`, you must set `BYPASS_CSRF=true` in `back-end/.env`.
 
 To build the front-end for production
 ```
