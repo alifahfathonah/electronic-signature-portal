@@ -20,10 +20,6 @@ class VerifyCsrfToken extends Middleware
      * */
     protected function tokensMatch($request)
     {
-        if (config('app.env') !== 'development' && config('app.bypass-csrf')) {
-            return true;
-        }
-
         return parent::tokensMatch($request);
     }
 }

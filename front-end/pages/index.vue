@@ -10,9 +10,10 @@
           <p>It's a pleasure to give in to temptations when these temptations actually make your life better. That's what we do here.</p>
           <p>Give in to the temptation, join the forces of freedom. You can have it all - legally binding signatures AND control over your data.</p>
           <v-text-field
+            v-model="slug"
             placeholder="your-company-name"
             :prefix="origin"
-            v-model="slug"
+            :error-messages="$store.state.ui.validationErrors['slug']"
           />
         </v-card-text>
         <v-card-actions>
@@ -20,9 +21,15 @@
           <v-btn
             color="primary"
             nuxt
+            :disabled="creatingCompany"
             @click="checkSlug"
           >
-            Let's go!
+            <template v-if="!creatingCompany">
+              Create your company!
+            </template>
+            <template v-else>
+              Creating company...
+            </template>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -33,7 +40,7 @@
       max-width="400"
       :fullscreen="$vuetify.breakpoint.xsOnly"
     >
-      <login-dialog-content/>
+      <login-dialog-content @loggedIn="loggedIn"/>
     </v-dialog>
   </v-row>
 </template>
@@ -46,30 +53,42 @@ export default {
   data: () => ({
     slug: '',
     showLoginDialog: false,
-    origin: window.location.origin + '/'
+    origin: window.location.origin + '/',
+    creatingCompany: false
   }),
   methods: {
     async checkSlug () {
       try {
         // If no validation errors are returned then this slug is available.
         await this.$axios.get('api/company/check-slug-availability', {
-          query: {
+          params: {
             slug: this.slug
           }
         })
+      } catch (e) {
+        // If slug is taken, validation error is thrown and we return.
+        return
+      }
 
-        // If we are logged in, attempt to register slug.
+      // If we are logged in, attempt to register slug.
+      if (this.$store.state.user.me) {
+        this.createCompany()
+      } else {
         this.showLoginDialog = true
-        // if (this.$store.user.me) {
-        //   await this.$axios.post('api/company/', {
-        //     body: {
-        //       slug: this.slug
-        //     }
-        //   })
-        // } else {
-        //   this.showLoginModal = true
-        // }
-      } catch (e) {}
+      }
+    },
+    loggedIn () {
+      this.showLoginDialog = false
+      this.createCompany()
+    },
+    async createCompany () {
+      this.creatingCompany = true
+
+      const response = await this.$axios.post('api/company/', {
+        slug: this.slug
+      })
+
+      this.$router.push(`admin/${response.data.company.id}/config`)
     }
   }
 }

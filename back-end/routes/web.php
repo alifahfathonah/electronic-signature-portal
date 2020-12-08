@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\EmbeddedIdentityController;
+use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
@@ -19,25 +20,25 @@ Route::get('/api/get-files/{file-id}', 'SignatureController@getFiles');
 
 Route::prefix('api')->group(function () {
     Route::prefix('company')->group(function () {
+        Route::post('/', [CompanyController::class, 'store'])->middleware(['auth']);
         Route::get('check-slug-availability', [CompanyController::class, 'checkUrlSlug']);
     });
 
     Route::prefix('authenticate')->group(function () {
-        Route::post('smart-id/start', [EmbeddedIdentityController::class, 'startSmartidLogin']);
-        Route::post('smart-id/finish', [EmbeddedIdentityController::class, 'finishSmartidLogin']);
+        Route::get('who-am-i', [AuthController::class, 'whoAmI']);
 
-        Route::post('mobile-id/start', [EmbeddedIdentityController::class, 'startMobileidLogin']);
-        Route::post('mobile-id/finish', [EmbeddedIdentityController::class, 'finishMobileidLogin']);
+        Route::post('smart-id/start', [AuthController::class, 'startSmartidLogin']);
+        Route::post('smart-id/finish', [AuthController::class, 'finishSmartidLogin']);
 
-        Route::post('id-card', [EmbeddedIdentityController::class, 'idcardLogin']);
+        Route::post('mobile-id/start', [AuthController::class, 'startMobileidLogin']);
+        Route::post('mobile-id/finish', [AuthController::class, 'finishMobileidLogin']);
+
+        Route::post('id-card', [AuthController::class, 'idcardLogin']);
     });
 });
 
 // This part should always be last in web.php.
 Route::fallback(function ($route = '') {
     // Serve index.html.
-    $csrf = csrf_token();
-    $html = File::get(public_path('/index.html'));
-    $html = str_replace('<body>', "<body><script>window.CSRF_TOKEN = '$csrf'</script>", $html);
-    return $html;
+    return File::get(public_path('/index.html'));
 });

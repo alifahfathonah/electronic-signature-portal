@@ -2,10 +2,18 @@
   <v-card align="center">
     <v-card-title class="headline">
       <v-spacer/>
-        Logging in...
+        <template v-if="!method">
+          Please log in
+        </template>
+        <template v-else>
+          Logging in...
+        </template>
       <v-spacer/>
     </v-card-title>
     <v-card-text>
+      <p v-if="!method">
+        Select your preferred log in method from the list below.
+      </p>
 
       <!-- Show login methods -->
       <login-method-list v-if="!method" @selectMethod="selectMethod"></login-method-list>
@@ -16,7 +24,7 @@
       </template>
 
       <!-- Ask for more details (smart-id or mobile-id) -->
-      <template v-if="['smart-id', 'mobile-id'].includes(method) && !challenge">
+      <template v-if="twoStepPromptingMoreInfo">
         <v-text-field
           v-model="idCode"
           label="Identity Code"
@@ -41,15 +49,15 @@
 
       <!-- Show challenge (smart-id or mobile-id) -->
       <template v-if="challenge">
+        <p>After ensuring that the challenge below matches the one displayed in your mobile device, please enter PIN1 on your device.</p>
         <p>Challenge: <b>{{ challenge }}</b>.</p>
-        <p>After ensuring that the challenge above matches the one displayed in your mobile device, please enter PIN1 on your device.</p>
       </template>
 
     </v-card-text>
     <v-card-actions>
+      <v-btn @click="reset" v-if="twoStepPromptingMoreInfo">Back</v-btn>
       <v-spacer/>
-      <v-btn @click="beginTwoStepLogin">Next</v-btn>
-      <v-spacer/>
+      <v-btn color="primary" @click="beginTwoStepLogin" v-if="twoStepPromptingMoreInfo">Next</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -74,6 +82,9 @@ export default {
     country: null
   }),
   computed: {
+    twoStepPromptingMoreInfo () {
+      return ['smart-id', 'mobile-id'].includes(this.method) && !this.challenge
+    },
     countrySelect () {
       if (this.method === 'mobile-id') {
         return [
@@ -147,9 +158,12 @@ export default {
         })
 
         if (response.data.status === 'OK') {
-          alert('LOGGED IN!')
+          this.$store.commit('user/setMe', { me: response.data.user })
+          this.$toast('Logged in!', { color: 'success' })
+          this.$emit('loggedIn')
         } else {
-          alert(response.data.status)
+          this.$toast(response.data.status, { color: 'error' })
+          this.reset()
         }
       } catch (e) {
         this.reset()

@@ -3,6 +3,7 @@ export default function ({ $axios, store, $toast }) {
     // Clear validation errors.
     store.commit('ui/setValidationErrors', { validationErrors: {} })
   })
+
   $axios.onError((error) => {
     // Replace validation errors.
     const validationErrors = (
