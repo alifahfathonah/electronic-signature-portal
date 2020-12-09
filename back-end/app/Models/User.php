@@ -8,11 +8,15 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * Class User
+ *
  * @package App\Models
  * @property string $idcode
  * @property string $country
  * @property string $first_name
  * @property string $last_name
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class User extends Authenticatable
 {
@@ -28,7 +32,7 @@ class User extends Authenticatable
     protected $fillable = ['idcode', 'country'];
 
     /**
-     * The attributes that should be hidden for arrays.
+     * Not used but just in case someone will add these fields
      *
      * @var array
      */
@@ -37,12 +41,9 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+
+    public function SignatureContainers()
+    {
+        return $this->belongsToMany(SignatureContainer::class)->withPivot(['access_level']);
+    }
 }
