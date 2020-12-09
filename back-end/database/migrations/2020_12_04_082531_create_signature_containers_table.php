@@ -18,8 +18,6 @@ class CreateSignatureContainersTable extends Migration
             $table->string('container_type')->default('asice'); // Or pdf
             $table->string('container_path')->nullable();
             $table->string('public_id');
-            $table->bigInteger('company_user_id')->unsigned();
-            $table->foreign('company_user_id')->references('id')->on('company_users');
             $table->timestamps();
         });
     }

@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     async beginSigning () {
-      // TODO use process.env.EID_EASY_URL
+      // TODO use process.env.EID_API_URL
       const eidEasyUrl = 'https://id.eideasy.localhost' // Must be withhout slash as this is the event origin format
 
       if (this.iFrame) {

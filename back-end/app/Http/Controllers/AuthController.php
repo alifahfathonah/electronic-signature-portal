@@ -20,10 +20,10 @@ class AuthController extends Controller
     public function whoAmI()
     {
         $companyService = app(CompanyService::class);
-        $companies = Auth::check() ? $companyService->getUserCompanies(Auth::id()) : collect([]);
+        $companies      = Auth::check() ? $companyService->getUserCompanies(Auth::id()) : collect([]);
 
         return response()->json([
-            'user' => Auth::user(),
+            'user'      => Auth::user(),
             'companies' => CompanyResource::collection($companies),
         ]);
     }
@@ -94,9 +94,9 @@ class AuthController extends Controller
 
         return $this->authenticate(
             $responseData->idcode,
+            $responseData->country,
             $responseData->firstname ?? null,
             $responseData->lastname ?? null,
-            $responseData->country ?? null,
         );
     }
 
@@ -162,9 +162,9 @@ class AuthController extends Controller
 
         return $this->authenticate(
             $responseData->idcode,
+            $responseData->country,
             $responseData->firstname ?? null,
             $responseData->lastname ?? null,
-            $responseData->country ?? null,
         );
     }
 
@@ -184,29 +184,28 @@ class AuthController extends Controller
             'lang'    => $data['lang'] ?? 'en',
         ]);
 
-        $responseData = json_decode((string)$response->getBody());
+        $responseData = $response->json();
 
         return $this->authenticate(
             $responseData->idcode,
+            $responseData->country,
             $responseData->firstname ?? null,
             $responseData->lastname ?? null,
-            $responseData->country ?? null,
         );
     }
 
-    private function authenticate(string $idcode, ?string $firstName, ?string $lastName, ?string $country): Response
+    private function authenticate(string $idcode, string $country, ?string $firstName, ?string $lastName): Response
     {
-        $user = User::firstOrNew(['idcode' => $idcode]);
-        $user->idcode = $idcode;
+        $user = User::firstOrNew(['idcode' => $idcode, 'country' => $country]);
+
         $user->first_name = $firstName ?: $user->first_name;
-        $user->last_name = $lastName ?: $user->last_name;
-        $user->country = $country ?: $user->country;
+        $user->last_name  = $lastName ?: $user->last_name;
         $user->save();
 
         Auth::login($user);
 
         $companyService = app(CompanyService::class);
-        $companies = $companyService->getUserCompanies($user->id);
+        $companies      = $companyService->getUserCompanies($user->id);
 
         return response(['status' => 'OK', 'user' => $user, 'companies' => CompanyResource::collection($companies)]);
     }
