@@ -28,8 +28,11 @@ class OnlyCompanyAdmin
             ->exists();
 
         if (!$ok) {
-            throw new UnauthorizedException;
+            return response([
+                'message' => 'Unauthorized!',
+            ], 401);
         }
+
         return $next($request);
     }
 }

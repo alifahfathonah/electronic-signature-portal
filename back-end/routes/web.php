@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DocumentController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,7 @@ Route::prefix('api')->group(function () {
 
         Route::prefix('{url_slug}')->group(function () {
             Route::put('/', [CompanyController::class, 'update'])->middleware(['company.admin']);
+            Route::post('document', [DocumentController::class, 'store'])->middleware(['company.admin']);
         });
     });
 
