@@ -24,7 +24,7 @@ class CreateNewCompanyRequest extends FormRequest
     public function rules()
     {
         return [
-            'slug' => 'required|unique:companies,url_slug'
+            'url_slug' => 'required|unique:companies,url_slug'
         ];
     }
 }

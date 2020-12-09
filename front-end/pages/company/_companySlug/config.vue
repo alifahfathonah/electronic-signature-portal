@@ -164,10 +164,10 @@ export default {
   },
   methods: {
     async save () {
-      const companyId = this.$route.params.companyId
+      const companySlug = this.$route.params.companySlug
 
       try {
-        await this.$axios.put(`api/company/${companyId}/`, {
+        await this.$axios.put(`api/company/${companySlug}/`, {
           eid_client_id: this.clientId || undefined,
           eid_secret: this.secret || undefined
         })

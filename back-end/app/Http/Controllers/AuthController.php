@@ -17,9 +17,8 @@ use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
-    public function whoAmI()
+    public function whoAmI(CompanyService $companyService)
     {
-        $companyService = app(CompanyService::class);
         $companies = Auth::check() ? $companyService->getUserCompanies(Auth::id()) : collect([]);
 
         return response()->json([

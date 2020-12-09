@@ -23,7 +23,7 @@ Route::prefix('api')->group(function () {
         Route::post('/', [CompanyController::class, 'store'])->middleware(['auth']);
         Route::get('check-slug-availability', [CompanyController::class, 'checkUrlSlug']);
 
-        Route::prefix('{company_id}')->group(function () {
+        Route::prefix('{url_slug}')->group(function () {
             Route::put('/', [CompanyController::class, 'update'])->middleware(['company.admin']);
         });
     });

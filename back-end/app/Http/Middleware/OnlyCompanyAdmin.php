@@ -20,10 +20,10 @@ class OnlyCompanyAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        $ok = Company::where('id', $request->route('company_id'))
+        $ok = Company::where('url_slug', $request->route('url_slug'))
             ->whereHas('users', function ($q) {
-                $q->wherePivot('role', User::ROLE_ADMIN)
-                    ->where('id', Auth::id());
+                $q->where('company_users.role', User::ROLE_ADMIN)
+                    ->where('users.id', Auth::id());
             })
             ->exists();
 
