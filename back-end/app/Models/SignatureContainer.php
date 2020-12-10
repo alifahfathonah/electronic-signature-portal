@@ -25,6 +25,7 @@ class SignatureContainer extends Model
     use HasFactory;
 
     public const LEVEL_OWNER = "owner";
+    public const LEVEL_SIGNER = "signer";
     public const LEVEL_VIEWER = "viewer";
 
     public const ACCESS_WHITELIST = "whitelist";
@@ -42,7 +43,7 @@ class SignatureContainer extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot(['access_level']);
+        return $this->belongsToMany(User::class)->withPivot(['access_level', 'signed_at']);
     }
 
     public function company()

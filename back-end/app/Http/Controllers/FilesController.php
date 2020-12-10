@@ -8,7 +8,9 @@ use App\Http\Resources\ContainerResource;
 use App\Models\Company;
 use App\Models\SignatureContainer;
 use App\Models\UnsignedFile;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -22,12 +24,21 @@ class FilesController extends Controller
         $container                 = new SignatureContainer();
         $container->container_type = "asice";
         $container->public_id      = Str::random(20);
-        $container->company_id     = Company::where('url_slug', $request->route('url_slug'))->firstOrFail()->id;
+        $container->company_id     = Company::where('url_slug', $request->route('url_slug'))
+            ->firstOrFail()
+            ->id;
         $container->security       = SignatureContainer::ACCESS_PUBLIC;
         $container->save();
 
-        $user = $request->user();
-        $container->users()->attach($user->id, ['access_level' => SignatureContainer::LEVEL_OWNER]);
+        $users             = [];
+        $users[Auth::id()] = ['access_level' => SignatureContainer::LEVEL_OWNER];
+        // TODO implement email based access.
+        foreach ($request->input('people') as $person) {
+            $user             = User::firstOrCreate(['idcode' => $person['identifier'], 'country' => $person['country']]);
+            $users[$user->id] = ['access_level' => $person['access_level']];
+        }
+
+        $container->users()->attach($users);
 
         $containerPath = $this->storeFiles($request, $container);
 

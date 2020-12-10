@@ -9,9 +9,9 @@ export const mutations = {
 }
 
 export const actions = {
-  async uploadFiles ({ commit, state, rootState }, { files }) {
+  async uploadFiles ({ commit, state, rootState }, { files, people }) {
     const slug = rootState.company.selectedCompany.url_slug
-    const response = await this.$axios.$post(`api/company/${slug}/container`, { files })
+    const response = await this.$axios.$post(`api/company/${slug}/container`, { files, people })
 
     const containers = [...state.containers, response.container]
     commit('setContainers', { containers })

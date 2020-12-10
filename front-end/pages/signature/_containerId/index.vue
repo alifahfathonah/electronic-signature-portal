@@ -12,7 +12,7 @@
         <v-card-title class="headline">
           Document signing
         </v-card-title>
-        <v-card-subtitle>Created on {{ $moment(container.created_at).format('D.M.Y') }}.</v-card-subtitle>
+        <v-card-subtitle>Created on {{ $moment(container.created_at).format('DD.MM.Y') }}.</v-card-subtitle>
         <v-card-text>
           <p>
             Document link: <a href="javascript:;" @click="copyUrl">{{ signatureUrl }}</a>
@@ -31,7 +31,7 @@
           </p>
           <file-list :files="container.files" :container-id="container.public_id" />
           <signature-methods @signWithSmartId="signWithSmartId" />
-          <signee-list />
+          <signee-list v-if="container.users.length" :people="container.users"/>
           <template v-if="$route.query.signed">
             <br>
             <h3>Signed container</h3>
