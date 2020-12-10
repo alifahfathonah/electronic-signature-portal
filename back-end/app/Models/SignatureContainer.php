@@ -25,6 +25,7 @@ class SignatureContainer extends Model
     use HasFactory;
 
     public const LEVEL_OWNER = "owner";
+    public const LEVEL_SIGNER = "signer";
     public const LEVEL_VIEWER = "viewer";
 
     public const ACCESS_WHITELIST = "whitelist";
