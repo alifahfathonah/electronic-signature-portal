@@ -46,7 +46,8 @@ export default {
   // (https://go.nuxtjs.dev/config-modules)
   buildModules: [
     '@nuxtjs/eslint-module',
-    '@nuxtjs/vuetify'
+    '@nuxtjs/vuetify',
+    '@nuxtjs/dotenv'
   ],
 
   // Modules (https://go.nuxtjs.dev/config-modules)

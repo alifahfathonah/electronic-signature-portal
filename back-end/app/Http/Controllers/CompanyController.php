@@ -41,11 +41,10 @@ class CompanyController extends Controller
         ]);
     }
 
-    public function update(UpdateCompanyRequest $request)
+    public function update(UpdateCompanyRequest $request, Company $company)
     {
         $companyService = app(CompanyService::class);
 
-        $company = Company::findOrFail($request->route('company_id'));
         $company->update($request->all());
 
         $companies = $companyService->getUserCompanies(Auth::id());

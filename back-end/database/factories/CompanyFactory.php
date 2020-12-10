@@ -2,18 +2,17 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
-class UserFactory extends Factory
+class CompanyFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = User::class;
+    protected $model = Company::class;
 
     /**
      * Define the model's default state.
@@ -23,10 +22,7 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'idcode'     => "10101010005",
-            'country'    => 'EE',
-            'first_name' => $this->faker->firstName,
-            'last_name'  => $this->faker->lastName,
+            'url_slug' => 'eid-easy',
         ];
     }
 }
