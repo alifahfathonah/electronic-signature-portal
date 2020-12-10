@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FilesController;
 use App\Http\Controllers\DocumentController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
@@ -17,8 +17,6 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/api/get-files/{file-id}', 'SignatureController@getFiles');
-
 Route::prefix('api')->group(function () {
     Route::prefix('company')->group(function () {
         Route::post('/', [CompanyController::class, 'store'])->middleware(['auth']);
@@ -27,8 +25,14 @@ Route::prefix('api')->group(function () {
         Route::prefix('{url_slug}')->group(function () {
             Route::put('/', [CompanyController::class, 'update'])->middleware(['company.admin']);
             Route::post('document', [DocumentController::class, 'store'])->middleware(['company.admin']);
+            Route::post('/container', [FilesController::class, 'createSignatureContainer']);
         });
     });
+
+    Route::get('get-files/{file-id}', 'FilesController@getFiles');
+    Route::post('signatures/get-idcard-token', 'SignatureController@getIdcardToken');
+    Route::post('signatures/get-signature-digest', 'SignatureController@getSignatureDigest');
+    Route::post('signatures/finish-signature', 'SignatureController@finishSignature');
 
     Route::prefix('authenticate')->group(function () {
         Route::get('who-am-i', [AuthController::class, 'whoAmI']);

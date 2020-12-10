@@ -1,14 +1,14 @@
 <template>
   <v-card align="center">
     <v-card-title class="headline">
-      <v-spacer/>
-        <template v-if="!method">
-          Please log in
-        </template>
-        <template v-else>
-          Logging in...
-        </template>
-      <v-spacer/>
+      <v-spacer />
+      <template v-if="!method">
+        Please log in
+      </template>
+      <template v-else>
+        Logging in...
+      </template>
+      <v-spacer />
     </v-card-title>
     <v-card-text>
       <p v-if="!method">
@@ -16,7 +16,7 @@
       </p>
 
       <!-- Show login methods -->
-      <login-method-list v-if="!method" @selectMethod="selectMethod"></login-method-list>
+      <login-method-list v-if="!method" @selectMethod="selectMethod" />
 
       <!-- Show ID card tip -->
       <template v-if="method === 'id-card'">
@@ -30,21 +30,21 @@
           label="Identity Code"
           :disabled="disable"
           :error-messages="$store.state.ui.validationErrors['idcode']"
-        ></v-text-field>
+        />
         <v-text-field
           v-if="method === 'mobile-id'"
           v-model="phone"
           label="Phone number"
           :disabled="disable"
           :error-messages="$store.state.ui.validationErrors['phone']"
-        ></v-text-field>
+        />
         <v-select
           v-model="country"
           :items="countrySelect"
           label="Country"
           :disabled="disable"
           :error-messages="$store.state.ui.validationErrors['country']"
-        ></v-select>
+        />
       </template>
 
       <!-- Show challenge (smart-id or mobile-id) -->
@@ -52,12 +52,15 @@
         <p>After ensuring that the challenge below matches the one displayed in your mobile device, please enter PIN1 on your device.</p>
         <p>Challenge: <b>{{ challenge }}</b>.</p>
       </template>
-
     </v-card-text>
     <v-card-actions>
-      <v-btn @click="reset" v-if="twoStepPromptingMoreInfo">Back</v-btn>
-      <v-spacer/>
-      <v-btn color="primary" @click="beginTwoStepLogin" v-if="twoStepPromptingMoreInfo">Next</v-btn>
+      <v-btn v-if="twoStepPromptingMoreInfo" @click="reset">
+        Back
+      </v-btn>
+      <v-spacer />
+      <v-btn v-if="twoStepPromptingMoreInfo" color="primary" @click="beginTwoStepLogin">
+        Next
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -134,7 +137,9 @@ export default {
       // With ID card, we will begin login process. With other
       // methods, we need to gather more data from user.
       if (method === 'id-card') {
-        await this.$axios.post('api/authenticate/id-card/start')
+        // TODO use correct client_id and country
+        await this.$axios.get('https://ee.eideasy.com/api/identity/uwmRqqqCWegb3HK5i5FF167UkBTWc0ea/read-card')
+        // await this.$axios.get('https://ee.eideasy.com/api/identity/CLIENT_ID/read-card')
       }
     },
     async beginTwoStepLogin () {
