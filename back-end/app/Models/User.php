@@ -42,7 +42,7 @@ class User extends Authenticatable
     ];
 
 
-    public function SignatureContainers()
+    public function signatureContainers()
     {
         return $this->belongsToMany(SignatureContainer::class)->withPivot(['access_level']);
     }

@@ -13,9 +13,8 @@ export const actions = {
     const response = await this.$axios.$get('api/authenticate/who-am-i')
     if (response.user) {
       commit('setMe', { me: response.user })
-      if (response.companies) {
-        commit('company/setCompanies', { companies: response.companies }, { root: true })
-      }
+      commit('company/setCompanies', { companies: response.companies }, { root: true })
+      commit('container/setContainers', { containers: response.containers }, { root: true })
     }
   }
 }

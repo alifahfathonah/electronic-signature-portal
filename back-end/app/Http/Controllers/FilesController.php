@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Container\CreateContainerRequest;
+use App\Http\Resources\ContainerResource;
 use App\Models\Company;
 use App\Models\SignatureContainer;
 use App\Models\UnsignedFile;
@@ -32,8 +33,7 @@ class FilesController extends Controller
         DB::commit();
 
         return response()->json([
-            'id'    => $container->id,
-            'files' => $container->files()->select(['id', 'name'])->get()
+            'container' => new ContainerResource($container),
         ]);
     }
 

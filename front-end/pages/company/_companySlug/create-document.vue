@@ -116,7 +116,10 @@ export default {
 
       await Promise.all(promises)
 
-      this.$axios.post(`api/company/${this.$store.state.company.selectedCompany.url_slug}/container`, { files })
+      const container = await this.$store.dispatch('container/uploadFiles', { files })
+
+      this.$router.push(`/signature/${container.public_id}`)
+      this.$toast('Container created!', { color: 'success' })
     },
     getFileContent (file) {
       return new Promise((resolve) => {

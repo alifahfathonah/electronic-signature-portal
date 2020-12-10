@@ -11,7 +11,7 @@ class CompanyResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return array
      */
     public function toArray($request)
@@ -20,7 +20,7 @@ class CompanyResource extends JsonResource
 
         /** @var $this Company */
         if ($this->eid_client_id) {
-            $toArray['eid_client_id'] = $this->anonymizeString($this->eid_client_id);
+            $toArray['eid_client_id'] = $this->eid_client_id;
         }
         if ($this->eid_secret) {
             $toArray['eid_secret'] = $this->anonymizeString($this->eid_secret);
@@ -47,7 +47,7 @@ class CompanyResource extends JsonResource
         } else {
             $secondPart = substr($string, $length - 4);
         }
-        $firstPart = str_repeat('*', $length-4);
+        $firstPart = str_repeat('*', $length - 4);
         return $firstPart . $secondPart;
     }
 }

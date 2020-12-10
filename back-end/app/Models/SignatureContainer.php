@@ -41,4 +41,9 @@ class SignatureContainer extends Model
     {
         return $this->belongsToMany(User::class)->withPivot(['access_level']);
     }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }
