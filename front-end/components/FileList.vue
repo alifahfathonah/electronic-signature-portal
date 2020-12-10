@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3>Signed files</h3>
-    <v-list-item-group>
+    <v-list>
       <v-list-item v-for="file in filesFormatted" :key="file.id" inactive>
         <v-list-item-icon>
           <v-icon>mdi-file</v-icon>
@@ -20,7 +20,7 @@
           </v-btn>
         </v-list-item-action>
       </v-list-item>
-    </v-list-item-group>
+    </v-list>
   </div>
 </template>
 

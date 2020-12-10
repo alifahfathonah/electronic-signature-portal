@@ -42,7 +42,7 @@
               value="only-some"
             ></v-radio>
           </v-radio-group>
-<!--          <v-list-item-group>-->
+<!--          <v-list>-->
 <!--            <v-list-item>-->
 <!--              <v-list-item-icon>-->
 <!--                <v-icon>mdi-account</v-icon>-->
@@ -70,7 +70,7 @@
 <!--                </v-btn>-->
 <!--              </v-list-item-action>-->
 <!--            </v-list-item>-->
-<!--          </v-list-item-group>-->
+<!--          </v-list>-->
           <v-text-field
             label="Social security number"
             disabled
@@ -85,7 +85,7 @@
           <br>
           <h3>Admins <i>(in development)</i></h3>
           <p>It's a pleasure to give in to temptations when these temptations actually make your life better. That's what we do here.</p>
-<!--          <v-list-item-group>-->
+<!--          <v-list>-->
 <!--            <v-list-item>-->
 <!--              <v-list-item-icon>-->
 <!--                <v-icon>mdi-account-key</v-icon>-->
@@ -113,7 +113,7 @@
 <!--                </v-btn>-->
 <!--              </v-list-item-action>-->
 <!--            </v-list-item>-->
-<!--          </v-list-item-group>-->
+<!--          </v-list>-->
           <v-text-field
             label="Social security number"
             disabled
