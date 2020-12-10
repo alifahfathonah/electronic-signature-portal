@@ -1,18 +1,26 @@
 <template>
   <v-row justify="center" align="center">
     <v-col cols="12" sm="8" md="6">
-      <v-card>
+      <login-dialog-card :containerId="$route.params.containerId" v-if="requireLogin"/>
+      <v-card v-if="accessErrorMessage">
+        <v-card-title>Oops!</v-card-title>
+        <v-card-text>
+          <p>{{ accessErrorMessage }}</p>
+        </v-card-text>
+      </v-card>
+      <v-card v-if="container">
         <v-card-title class="headline">
           Document signing
         </v-card-title>
-        <v-card-subtitle>Created on 01.12.2020 by Bilbo Baggins.</v-card-subtitle>
+        <v-card-subtitle>Created on {{ $moment(container.created_at).format('D.M.Y') }}.</v-card-subtitle>
         <v-card-text>
           <p>
-            Document link: <a href="#">https://signing.yousite.com/signature/28hqjUASd2a9S</a>
+            Document link: <a href="javascript:;" @click="copyUrl">{{ signatureUrl }}</a>
             <v-btn
               fab
               small
               elevation="1"
+              @click="copyUrl"
             >
               <v-icon>
                 mdi-content-copy
@@ -21,7 +29,7 @@
             <br>
             Share this link with anyone who you wish to sign this document.
           </p>
-          <file-list />
+          <file-list :files="container.files" :containerId="container.public_id"/>
           <signature-methods @signWithSmartId="signWithSmartId" />
           <signee-list />
           <template v-if="$route.query.signed">
@@ -75,19 +83,56 @@
 
 <script>
 
+import LoginDialogCard from '@/components/Login/LoginDialogCard'
 import FileList from '@/components/FileList'
 import SigneeList from '@/components/SigneeList'
 import SignatureMethods from '@/components/signature/SignatureMethods'
+import copyToClipboard from 'clipboard-copy'
 
 export default {
-  components: { SignatureMethods, FileList, SigneeList },
+  components: { LoginDialogCard, SignatureMethods, FileList, SigneeList },
   data: () => ({
+    requireLogin: false,
+    accessErrorMessage: null,
+
+    container: null,
     idCardCertificate: null,
     error: null,
     showSmartIdSigningModal: false,
     showSuccessDialog: false
   }),
+  computed: {
+    signatureUrl () {
+      return `${window.location.origin}/signature/${this.$route.params.containerId}`
+    }
+  },
+  async beforeCreate () {
+    const id = this.$route.params.containerId
+    this.container = this.$store.state.container.containers.find(c => c.public_id === id + 's')
+    if (!this.container) {
+      try {
+        const response = await this.$axios.get(`/api/container/${id}`)
+        this.container = response.data.container
+      } catch (e) {
+        if (e.response.status === 401) {
+          if (this.$store.state.user.me) {
+            this.accessErrorMessage = 'You are not authorized to view this file.'
+          } else {
+            this.requireLogin = true
+          }
+        } else if (e.response.status === 404) {
+          this.accessErrorMessage = 'Not found.'
+        } else {
+          this.accessErrorMessage = 'Unknown error.'
+        }
+      }
+    }
+  },
   methods: {
+    copyUrl () {
+      copyToClipboard(this.signatureUrl)
+      this.$toast('Copied to clipboard!')
+    },
     async idCardSigning () {
       console.log('Start reading certificate')
 

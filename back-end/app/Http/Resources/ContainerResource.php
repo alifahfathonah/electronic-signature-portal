@@ -20,6 +20,19 @@ class ContainerResource extends JsonResource
         $data = parent::toArray($request);
         unset($data['users']);
         $data['access_level'] = $this->users->first()->pivot->access_level;
+
+        $files = [];
+
+        foreach ($this->files as $file) {
+            $files[] = [
+                'id'   => $file->id,
+                'name' => $file->name,
+                'size' => $file->size,
+            ];
+        }
+
+        $data['files'] = $files;
+
         return $data;
     }
 
@@ -34,6 +47,7 @@ class ContainerResource extends JsonResource
         $resource->load(['users' => function ($userQ) {
             $userQ->where('users.id', Auth::id())->selectRaw('1');
         }]);
+        $resource->load('files');
         return parent::collection($resource);
     }
 }

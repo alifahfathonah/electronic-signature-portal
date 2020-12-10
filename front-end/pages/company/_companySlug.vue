@@ -3,7 +3,7 @@
     <nuxt v-if="$store.state.user.me"/>
     <v-row v-else justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
-        <login-dialog-content :companySlug="$route.params.companySlug"/>
+        <login-dialog-card :companySlug="$route.params.companySlug"/>
       </v-col>
     </v-row>
   </div>

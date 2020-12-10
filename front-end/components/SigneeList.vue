@@ -34,14 +34,3 @@
     </v-list-item-group>
   </div>
 </template>
-
-<script>
-export default {
-  name: 'ShowFile',
-  props: ['content']
-}
-</script>
-
-<style scoped>
-
-</style>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Container\CreateContainerRequest;
+use App\Http\Requests\Container\DownloadFileRequest;
 use App\Http\Resources\ContainerResource;
 use App\Models\Company;
 use App\Models\SignatureContainer;
@@ -20,15 +21,18 @@ class FilesController extends Controller
 
         $container                 = new SignatureContainer();
         $container->container_type = "asice";
-        $container->container_path = "container.asice";
         $container->public_id      = Str::random(20);
         $container->company_id     = Company::where('url_slug', $request->route('url_slug'))->firstOrFail()->id;
+        $container->security       = SignatureContainer::ACCESS_PUBLIC;
         $container->save();
 
         $user = $request->user();
         $container->users()->attach($user->id, ['access_level' => SignatureContainer::LEVEL_OWNER]);
 
-        $this->storeFiles($request, $container);
+        $containerPath = $this->storeFiles($request, $container);
+
+        $container->container_path = $containerPath;
+        $container->save();
 
         DB::commit();
 
@@ -37,27 +41,22 @@ class FilesController extends Controller
         ]);
     }
 
-    public function getFiles(Request $request)
+    public function downloadFile(DownloadFileRequest $request)
     {
-
-        // TODO check permissions
-        $signatureContainer = SignatureContainer::find($request->fileid);
-
-        // TODO ge actual signature container files
-        $files   = [];
-        $files[] = [
-            'fileName'    => 'test.pdf',
-            'fileContent' => Storage::get('/company1/1/test.pdf'),
-        ];
-        $files[] = [
-            'fileName'    => 'test.txt',
-            'fileContent' => Storage::get('/company1/1/test.txt')
-        ];
-
-        return response()->json($files);
+        $container = SignatureContainer::where('public_id', $request->route('container_id'))->firstOrFail();
+        $path      = $this->getFileStoragePath($container->id, $request->input('file_name'));
+        return response()->download(storage_path('app/' . $path));
     }
 
-    private function storeFiles(Request $request, SignatureContainer $container)
+    public function getContainerInfo(Request $request)
+    {
+        $container = SignatureContainer::where('public_id', $request->route('container_id'))->firstOrFail();
+        return response([
+            'container' => new ContainerResource($container),
+        ]);
+    }
+
+    private function storeFiles(Request $request, SignatureContainer $container): string
     {
         $zip     = new \ZipArchive();
         $zipPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . Str::random();
@@ -81,12 +80,14 @@ XML;
             $unsignedFile = new UnsignedFile();
             $name         = $fileData['name'];
             $fileContent  = base64_decode($fileData['content']);
-            Storage::put("/containers/$container->id/$name", $fileContent);
+            $storagePath  = $this->getFileStoragePath($container->id, $name);
+            Storage::put($storagePath, $fileContent);
 
             // Add file to the container.
             $unsignedFile->signature_container_id = $container->id;
             $unsignedFile->name                   = $name;
-            $unsignedFile->storage_path           = $name;
+            $unsignedFile->storage_path           = $storagePath;
+            $unsignedFile->size                   = Storage::size($storagePath);
             $unsignedFile->mime_type              = $fileData['mime'];
             $unsignedFile->save();
             $zip->addFromString($name, $fileContent);
@@ -101,6 +102,14 @@ XML;
         $zip->addFromString('META-INF/manifest.xml', $manifest->asXML());
         $zip->close();
 
-        Storage::put("/containers/$container->id/container-" . now()->timestamp . ".asice", file_get_contents($zipPath));
+        $containerPath = "containers/$container->id/container-" . now()->timestamp . ".asice";
+        Storage::put($containerPath, file_get_contents($zipPath));
+
+        return $containerPath;
+    }
+
+    private function getFileStoragePath(int $containerId, string $fileName): string
+    {
+        return "/containers/$containerId/$fileName";
     }
 }

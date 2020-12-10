@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\SignatureContainer;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -22,6 +23,7 @@ class CreateSignatureContainersTable extends Migration
             $table->string('container_type')->default('asice'); // Or pdf
             $table->string('container_path')->nullable();
             $table->string('public_id');
+            $table->string('security')->default(SignatureContainer::ACCESS_WHITELIST);
             $table->timestamps();
         });
     }

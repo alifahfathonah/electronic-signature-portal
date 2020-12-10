@@ -11,6 +11,7 @@ use App\Services\CompanyService;
 use App\Services\ContainerService;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +24,9 @@ class AuthController extends Controller
     {
         $companies = Auth::check() ? $companyService->getUserCompanies(Auth::id()) : collect([]);
 
-        $containers = $containerService->getUserContainers(Auth::id());
+        $containers = Auth::check()
+            ? $containerService->getUserContainers(Auth::id())
+            : new Collection;
 
         return response()->json([
             'user'       => Auth::user(),
