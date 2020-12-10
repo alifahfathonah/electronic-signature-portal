@@ -12,7 +12,7 @@ class FilesTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function testSaveFiles()
+    public function testCreateSignatureSignature()
     {
         Storage::fake();
 
@@ -23,7 +23,7 @@ class FilesTest extends TestCase
         $company = Company::factory()->create();
         $company->users()->attach($user->id, ['role' => 'ADMIN']);
 
-        $response = $this->post("/api/container", [
+        $containerResponse = $this->post("/api/container", [
             'files' => [
                 [
                     'name'    => 'test.txt',
@@ -38,9 +38,9 @@ class FilesTest extends TestCase
             ]
         ]);
 
-        $response->assertStatus(200);
+        $containerResponse->assertStatus(200);
 
-        $response->assertJson([
+        $containerResponse->assertJson([
             'id'    => 1,
             'files' => [
                 ['id' => 1, 'name' => 'test.txt'],
@@ -48,5 +48,10 @@ class FilesTest extends TestCase
             ],
         ]);
 
+        $containerResponse = $this->post("/api/finish-signature", [
+            'fileid'    => $containerResponse->json()['id'],
+            'signature' => '',
+            'sign-type' => 'id-card'
+        ]);
     }
 }

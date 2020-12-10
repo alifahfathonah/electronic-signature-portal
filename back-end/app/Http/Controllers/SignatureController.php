@@ -81,36 +81,6 @@ class SignatureController extends Controller
         // TODO check permissions.
         $signatureContainer = SignatureContainer::find($request->fileid);
 
-        $zip = new \ZipArchive();
-        $zip->open('/tmp/' . Str::random(), \ZipArchive::CREATE);
-        $zip->addFromString("mimetype", "application/vnd.etsi.asic-e+zip");
-        $zip->addFromString("test.txt", Storage::get('/company1/1/test.txt'));
-        $zip->addFromString("test.pdf", Storage::get('/company1/1/test.pdf'));
-        $zip->addEmptyDir('META-INF');
-
-        $manifestTemplate = <<<XML
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0">
-  <manifest:file-entry manifest:full-path="/" manifest:media-type="application/vnd.etsi.asic-e+zip"/>
-</manifest:manifest>
-XML;
-
-        $manifest  = simplexml_load_string($manifestTemplate);
-        $namespace = 'urn:oasis:names:tc:opendocument:xmlns:manifest:1.0';
-        $newFileEntry = $manifest->addChild('file-entry');
-        $newFileEntry->addAttribute('manifest:full-path', "test.pdf", $namespace);
-        $newFileEntry->addAttribute('manifest:media-type', "application-pdf", $namespace);
-
-        $zip->addFile('META-INF/manifest.xml', $manifest->asXML());
-
-
-
-        $zip->addFromString("META-INF/manifest.xml", $manifest->asXML());
-
-
-        $zip->
-
-
         $rootSignature               = new \DOMDocument('1.0', 'utf-8');
         $rootSignature->formatOutput = true;
         $rootSignature->loadXML('<asic:XAdESSignatures xmlns:asic="http://uri.etsi.org/02918/v1.2.1#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xades="http://uri.etsi.org/01903/v1.3.2#"></asic:XAdESSignatures>');
