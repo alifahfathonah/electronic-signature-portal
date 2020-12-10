@@ -210,6 +210,7 @@ class AuthController extends Controller
         $user->save();
 
         Auth::login($user);
+        request()->session()->regenerate();
 
         $companyService = app(CompanyService::class);
         $companies      = $companyService->getUserCompanies($user->id);
