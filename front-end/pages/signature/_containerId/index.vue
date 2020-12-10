@@ -1,7 +1,7 @@
 <template>
   <v-row justify="center" align="center">
     <v-col cols="12" sm="8" md="6">
-      <login-dialog-card :containerId="$route.params.containerId" v-if="requireLogin"/>
+      <login-dialog-card v-if="requireLogin" :container-id="$route.params.containerId" />
       <v-card v-if="accessErrorMessage">
         <v-card-title>Oops!</v-card-title>
         <v-card-text>
@@ -29,7 +29,7 @@
             <br>
             Share this link with anyone who you wish to sign this document.
           </p>
-          <file-list :files="container.files" :containerId="container.public_id"/>
+          <file-list :files="container.files" :container-id="container.public_id" />
           <signature-methods @signWithSmartId="signWithSmartId" />
           <signee-list />
           <template v-if="$route.query.signed">
@@ -83,7 +83,7 @@
 
 <script>
 
-import LoginDialogCard from '@/components/Login/LoginDialogCard'
+import LoginDialogCard from '@/components/login/LoginDialogCard'
 import FileList from '@/components/FileList'
 import SigneeList from '@/components/SigneeList'
 import SignatureMethods from '@/components/signature/SignatureMethods'
