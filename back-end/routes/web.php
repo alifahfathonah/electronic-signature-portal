@@ -3,6 +3,7 @@
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FilesController;
+use App\Http\Controllers\PasswordLoginController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::prefix('api')->group(function () {
+
+    Route::post('/password/login', [PasswordLoginController::class, 'login']);
+    Route::post('/password/register', [PasswordLoginController::class, 'register']);
+
     Route::prefix('company')->group(function () {
         Route::post('/', [CompanyController::class, 'store'])->middleware(['auth']);
         Route::get('check-slug-availability', [CompanyController::class, 'checkUrlSlug']);
