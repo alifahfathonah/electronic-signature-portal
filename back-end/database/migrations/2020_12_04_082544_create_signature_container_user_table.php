@@ -20,7 +20,7 @@ class CreateSignatureContainerUserTable extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('access_level');
-            $table->string('signature_status')->nullable();
+            $table->timestamp('signed_at')->nullable();
             $table->timestamps();
         });
     }
