@@ -15,7 +15,7 @@ class CreateCompaniesTable extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('url_slug');
+            $table->string('url_slug')->unique();
             $table->string('eid_client_id')->nullable();
             $table->string('eid_secret')->nullable();
             $table->string('logo_path')->nullable();

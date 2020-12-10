@@ -3,6 +3,7 @@
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FilesController;
+use App\Http\Controllers\DocumentController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
@@ -17,16 +18,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::prefix('api')->group(function () {
+    Route::prefix('company')->group(function () {
+        Route::post('/', [CompanyController::class, 'store'])->middleware(['auth']);
+        Route::get('check-slug-availability', [CompanyController::class, 'checkUrlSlug']);
 
-    Route::post('/company/', [CompanyController::class, 'store'])->middleware(['auth']);
-    Route::get('/company/check-slug-availability', [CompanyController::class, 'checkUrlSlug']);
-
-    Route::middleware(['auth', 'company.admin'])->group(function () {
-        Route::put('/company/{company}', [CompanyController::class, 'update']);
-    });
-
-    Route::middleware(['auth'])->group(function () {
-        Route::post('/container', [FilesController::class, 'createSignatureContainer']);
+        Route::prefix('{url_slug}')->group(function () {
+            Route::put('/', [CompanyController::class, 'update'])->middleware(['company.admin']);
+            Route::post('document', [DocumentController::class, 'store'])->middleware(['company.admin']);
+            Route::post('/container', [FilesController::class, 'createSignatureContainer']);
+        });
     });
 
     Route::get('get-files/{file-id}', 'FilesController@getFiles');

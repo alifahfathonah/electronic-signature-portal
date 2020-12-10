@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Company;
+namespace App\Http\Requests\Document;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateNewCompanyRequest extends FormRequest
+class CreateDocumentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,8 @@ class CreateNewCompanyRequest extends FormRequest
     public function rules()
     {
         return [
-            'url_slug' => 'required|unique:companies,url_slug'
+            'files' => 'required|array|min:1',
+            'files.*' => 'file',
         ];
     }
 }

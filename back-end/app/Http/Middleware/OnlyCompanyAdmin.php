@@ -6,7 +6,6 @@ use App\Models\Company;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\UnauthorizedException;
 
@@ -21,11 +20,17 @@ class OnlyCompanyAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        $company = $request->route('company');
-        $exists  = $company->users()->wherePivot('role', User::ROLE_ADMIN)->wherePivot('user_id', $request->user()->id)->exists();
+        $ok = Company::where('url_slug', $request->route('url_slug'))
+            ->whereHas('users', function ($q) {
+                $q->where('company_users.role', User::ROLE_ADMIN)
+                    ->where('users.id', Auth::id());
+            })
+            ->exists();
 
-        if (!$exists) {
-            abort(Response::HTTP_UNAUTHORIZED);
+        if (!$ok) {
+            return response([
+                'message' => 'Unauthorized!',
+            ], 401);
         }
 
         return $next($request);

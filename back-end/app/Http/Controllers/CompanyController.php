@@ -24,27 +24,28 @@ class CompanyController extends Controller
         ]);
     }
 
-    public function store(CreateNewCompanyRequest $request)
+    public function store(CreateNewCompanyRequest $request, CompanyService $companyService)
     {
         DB::beginTransaction();
 
         $company = Company::create([
-            'url_slug' => $request->slug,
+            'url_slug' => $request->input('url_slug'),
         ]);
 
         $company->users()->attach(Auth::id(), ['role' => User::ROLE_ADMIN]);
 
         DB::commit();
 
+        $companies = $companyService->getUserCompanies(Auth::id());
+
         return response([
-            'company' => $company,
+            'companies' => CompanyResource::collection($companies),
         ]);
     }
 
-    public function update(UpdateCompanyRequest $request, Company $company)
+    public function update(UpdateCompanyRequest $request, CompanyService $companyService)
     {
-        $companyService = app(CompanyService::class);
-
+        $company = Company::where('url_slug', $request->route('url_slug'))->firstOrFail();
         $company->update($request->all());
 
         $companies = $companyService->getUserCompanies(Auth::id());

@@ -8,22 +8,22 @@
         <v-card-text>
           <h3>eID Easy credentials</h3>
           <v-text-field
+            v-model="clientId"
             label="Client ID"
             :placeholder="selectedCompany && selectedCompany.eid_client_id"
             required
-            v-model="clientId"
             :error-messages="$store.state.ui.validationErrors['eid_client_id']"
           ></v-text-field>
           <v-text-field
+            v-model="secret"
             label="Secret"
             :placeholder="selectedCompany && selectedCompany.eid_secret"
             required
-            v-model="secret"
             :error-messages="$store.state.ui.validationErrors['eid_secret']"
           ></v-text-field>
           <br>
           <h3>Access control <i>(in development)</i></h3>
-          <p>Logged in users can create documents. Document creator can choose to only allow signed-in users to view and sign a document.</p>
+          <p>Specify who can create documents. Document creator can choose to only allow signed-in users to view and sign a document.</p>
           <v-radio-group
             v-model="accessControl"
             column
@@ -147,7 +147,7 @@ export default {
     return {
       clientId: null,
       secret: null,
-      accessControl: 'public'
+      accessControl: 'only-admins'
     }
   },
   computed: {
@@ -164,10 +164,10 @@ export default {
   },
   methods: {
     async save () {
-      const companyId = this.$route.params.companyId
+      const companySlug = this.$route.params.companySlug
 
       try {
-        await this.$axios.put(`api/company/${companyId}/`, {
+        await this.$axios.put(`api/company/${companySlug}/`, {
           eid_client_id: this.clientId || undefined,
           eid_secret: this.secret || undefined
         })

@@ -10,10 +10,10 @@
           <p>It's a pleasure to give in to temptations when these temptations actually make your life better. That's what we do here.</p>
           <p>Give in to the temptation, join the forces of freedom. You can have it all - legally binding signatures AND control over your data.</p>
           <v-text-field
-            v-model="slug"
+            v-model="url_slug"
             placeholder="your-company-name"
             :prefix="origin"
-            :error-messages="$store.state.ui.validationErrors['slug']"
+            :error-messages="$store.state.ui.validationErrors['url_slug']"
           />
         </v-card-text>
         <v-card-actions>
@@ -51,7 +51,7 @@ import LoginDialogContent from '@/components/login/LoginDialogContent'
 export default {
   components: { LoginDialogContent },
   data: () => ({
-    slug: '',
+    url_slug: '',
     showLoginDialog: false,
     origin: window.location.origin + '/',
     creatingCompany: false
@@ -62,7 +62,7 @@ export default {
         // If no validation errors are returned then this slug is available.
         await this.$axios.get('api/company/check-slug-availability', {
           params: {
-            slug: this.slug
+            url_slug: this.url_slug
           }
         })
       } catch (e) {
@@ -84,11 +84,11 @@ export default {
     async createCompany () {
       this.creatingCompany = true
 
-      const response = await this.$axios.post('api/company/', {
-        slug: this.slug
+      await this.$store.dispatch('company/createCompany', {
+        url_slug: this.url_slug
       })
 
-      this.$router.push(`company/${response.data.company.id}/config`)
+      this.$router.push(`company/${this.url_slug}/config`)
     }
   }
 }
