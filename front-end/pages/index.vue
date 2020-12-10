@@ -40,16 +40,16 @@
       max-width="400"
       :fullscreen="$vuetify.breakpoint.xsOnly"
     >
-      <login-dialog-content @loggedIn="loggedIn"/>
+      <login-dialog-card @loggedIn="loggedIn"/>
     </v-dialog>
   </v-row>
 </template>
 
 <script>
-import LoginDialogContent from '@/components/login/LoginDialogContent'
+import LoginDialogCard from '@/components/login/LoginDialogCard'
 
 export default {
-  components: { LoginDialogContent },
+  components: { LoginDialogCard },
   data: () => ({
     url_slug: '',
     showLoginDialog: false,

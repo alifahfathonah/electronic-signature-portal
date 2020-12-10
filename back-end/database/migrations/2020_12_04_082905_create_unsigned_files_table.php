@@ -18,6 +18,7 @@ class CreateUnsignedFilesTable extends Migration
             $table->string('name');
             $table->string('mime_type');
             $table->string('storage_path');
+            $table->integer('size');
             $table->bigInteger('signature_container_id')->unsigned();
             $table->foreign('signature_container_id')->references('id')->on('signature_containers');
             $table->timestamps();
