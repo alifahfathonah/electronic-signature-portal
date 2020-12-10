@@ -68,6 +68,7 @@ import LoginMethodList from '@/components/login/LoginMethodList'
 export default {
   components: { LoginMethodList },
   props: {
+    companySlug: String,
     isOpen: Boolean
   },
   data: () => ({
