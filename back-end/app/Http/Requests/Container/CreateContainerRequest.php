@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Document;
+namespace App\Http\Requests\Container;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateDocumentRequest extends FormRequest
+class CreateContainerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,10 @@ class CreateDocumentRequest extends FormRequest
     public function rules()
     {
         return [
-            'files' => 'required|array|min:1',
-            'files.*' => 'file',
+            'files'           => 'required|array|min:1',
+            'files.*.name'    => 'required',
+            'files.*.content' => 'required',
+            'files.*.mime'    => 'required',
         ];
     }
 }

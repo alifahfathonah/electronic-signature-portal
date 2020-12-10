@@ -98,14 +98,35 @@ export default {
     }
   },
   methods: {
-    saveFiles () {
-      const formData = new FormData()
+    async saveFiles () {
+      const files = []
+      const promises = this.files.map(async (f) => {
+        const read = new FileReader()
 
-      for (let i = 0; i < this.files.length; i++) {
-        formData.append(`files[${i}]`, this.files[i])
-      }
+        read.readAsDataURL(f)
 
-      this.$axios.post(`api/company/${this.$store.state.company.selectedCompany.url_slug}/document`, formData)
+        const base64 = await this.getFileContent(f)
+
+        files.push({
+          name: f.name,
+          mime: f.type,
+          content: base64
+        })
+      })
+
+      await Promise.all(promises)
+
+      this.$axios.post(`api/company/${this.$store.state.company.selectedCompany.url_slug}/container`, { files })
+    },
+    getFileContent (file) {
+      return new Promise((resolve) => {
+        const read = new FileReader()
+        read.readAsDataURL(file)
+        read.onloadend = () => {
+          const base64 = read.result.replace(/data:.*\/.*;base64,/, '')
+          resolve(base64)
+        }
+      })
     }
   }
 }

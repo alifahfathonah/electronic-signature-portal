@@ -25,8 +25,12 @@ class SignatureContainer extends Model
     use HasFactory;
 
     public const LEVEL_OWNER = "owner";
-    public const LEVEL_ADMIN = "admin";
     public const LEVEL_VIEWER = "viewer";
+
+    public function generatePath(): string
+    {
+        return "containers/$this->id/container-$this->id.$this->container_type";
+    }
 
     public function files()
     {

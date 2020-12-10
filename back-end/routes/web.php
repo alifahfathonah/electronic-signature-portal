@@ -24,8 +24,7 @@ Route::prefix('api')->group(function () {
 
         Route::prefix('{url_slug}')->group(function () {
             Route::put('/', [CompanyController::class, 'update'])->middleware(['company.admin']);
-            Route::post('document', [DocumentController::class, 'store'])->middleware(['company.admin']);
-            Route::post('/container', [FilesController::class, 'createSignatureContainer']);
+            Route::post('/container', [FilesController::class, 'createSignatureContainer'])->middleware(['company.admin']);
         });
     });
 
