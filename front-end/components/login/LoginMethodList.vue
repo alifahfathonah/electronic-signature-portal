@@ -1,29 +1,23 @@
 <template>
   <v-row>
     <v-col>
-      <v-btn @click="$emit('selectMethod', 'smart-id')" class="login-method-btn" elevation="1">
-        <img src="/methods/smart-id.svg" class="login-method-btn-img"/>
+      <v-btn class="login-method-btn" elevation="1" @click="$emit('selectMethod', 'smart-id')">
+        <img src="/methods/smart-id.svg" class="login-method-btn-img">
       </v-btn>
-      <v-btn @click="$emit('selectMethod', 'mobile-id')" class="login-method-btn" elevation="1">
-        <img src="/methods/eid_mobiilid_mark.png" class="login-method-btn-img"/>
+      <v-btn class="login-method-btn" elevation="1" @click="$emit('selectMethod', 'mobile-id')">
+        <img src="/methods/eid_mobiilid_mark.png" class="login-method-btn-img">
       </v-btn>
-      <v-btn @click="$emit('selectMethod', 'id-card')" class="login-method-btn" elevation="1">
-        <img src="/methods/eid_idkaart_mark.png" class="login-method-btn-img"/>
+      <v-btn class="login-method-btn" elevation="1" @click="$emit('selectMethod', 'id-card', 'EE')">
+        <img src="/methods/eid_idkaart_mark.png" class="login-method-btn-img">
       </v-btn>
-      <v-btn @click="$emit('selectMethod', 'id-card')" class="login-method-btn" elevation="1">
-        <img src="/methods/latvia-id-card.png" class="login-method-btn-img"/>
+      <v-btn class="login-method-btn" elevation="1" @click="$emit('selectMethod', 'id-card', 'LV')">
+        <img src="/methods/latvia-id-card.png" class="login-method-btn-img">
       </v-btn>
-      <v-btn @click="$emit('selectMethod', 'id-card')" class="login-method-btn" elevation="1">
+      <v-btn class="login-method-btn" elevation="1" @click="$emit('selectMethod', 'id-card', 'LT')">
         Lithuanian ID card
       </v-btn>
-      <v-btn @click="$emit('selectMethod', 'id-card')" class="login-method-btn" elevation="1">
-        Finnish ID card
-      </v-btn>
-      <v-btn @click="$emit('selectMethod', 'id-card')" class="login-method-btn" elevation="1">
+      <v-btn class="login-method-btn" elevation="1" @click="$emit('selectMethod', 'id-card', 'BE')">
         Belgian ID card
-      </v-btn>
-      <v-btn @click="$emit('selectMethod', 'id-card')" class="login-method-btn" elevation="1">
-        LuxTrust ID card
       </v-btn>
     </v-col>
   </v-row>

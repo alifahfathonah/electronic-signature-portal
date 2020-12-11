@@ -22,22 +22,15 @@ Route::prefix('api')->group(function () {
     Route::post('/password/login', [PasswordLoginController::class, 'login']);
     Route::post('/password/register', [PasswordLoginController::class, 'register']);
 
-    Route::prefix('company')->group(function () {
-        Route::post('/', [CompanyController::class, 'store'])->middleware(['auth']);
-        Route::get('check-slug-availability', [CompanyController::class, 'checkUrlSlug']);
+    Route::get('/company/check-slug-availability', [CompanyController::class, 'checkUrlSlug']);
 
-        Route::prefix('{url_slug}')->group(function () {
-            Route::put('/', [CompanyController::class, 'update'])->middleware(['company.admin']);
-            Route::post('/container', [FilesController::class, 'createSignatureContainer'])->middleware(['company.admin']);
-        });
-    });
+    Route::post('/company', [CompanyController::class, 'store'])->middleware(['auth']);
 
-    Route::prefix('container')->group(function () {
-        Route::prefix('{container_id}')->group(function () {
-            Route::get('/', [FilesController::class, 'getContainerInfo'])->middleware(['container.can-read']);
-            Route::get('/download', [FilesController::class, 'downloadFile'])->middleware(['container.can-read']);
-        });
-    });
+    Route::put('/company/{url_slug}/', [CompanyController::class, 'update'])->middleware(['company.admin']);
+    Route::post('/company/{url_slug}/container', [FilesController::class, 'createSignatureContainer'])->middleware(['company.admin']);
+
+    Route::get('/container/{container_id}', [FilesController::class, 'getContainerInfo'])->middleware(['container.can-read']);
+    Route::get('/container/{container_id}/download', [FilesController::class, 'downloadFile'])->middleware(['container.can-read']);
 
     Route::post('signatures/get-idcard-token', 'SignatureController@getIdcardToken');
     Route::post('signatures/get-signature-digest', 'SignatureController@getSignatureDigest');

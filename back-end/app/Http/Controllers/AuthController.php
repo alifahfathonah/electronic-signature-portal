@@ -191,13 +191,19 @@ class AuthController extends Controller
             'lang'    => $data['lang'] ?? 'en',
         ]);
 
+        if (!$response->ok()) {
+            return response()->json([], $response->status());
+        }
+
         $responseData = $response->json();
 
+        Log::debug("Login response", $responseData);
+
         return $this->authenticate(
-            $responseData->idcode,
-            $responseData->country,
-            $responseData->firstname ?? null,
-            $responseData->lastname ?? null,
+            $responseData['idcode'],
+            $responseData['country'],
+            $responseData['firstname'] ?? null,
+            $responseData['lastname'] ?? null,
         );
     }
 

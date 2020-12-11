@@ -132,14 +132,31 @@ export default {
       this.challenge = null
       this.token = null
     },
-    async selectMethod (method) {
+    async selectMethod (method, country) {
       this.method = method
       // With ID card, we will begin login process. With other
       // methods, we need to gather more data from user.
       if (method === 'id-card') {
-        // TODO use correct client_id and country
-        await this.$axios.get('https://ee.eideasy.com/api/identity/uwmRqqqCWegb3HK5i5FF167UkBTWc0ea/read-card')
-        // await this.$axios.get('https://ee.eideasy.com/api/identity/CLIENT_ID/read-card')
+        try {
+          const readResponse = await this.$axios.get(`https://${country}${process.env.EID_IDCARD_URL}/api/identity/${process.env.EID_CLIENT_ID}/read-card`)
+          const response = await this.$axios.post('api/authenticate/id-card', {
+            token: readResponse.data.token,
+            country
+          })
+
+          if (response.data.status === 'OK') {
+            this.$store.commit('user/setMe', { me: response.data.user })
+            this.$toast('Logged in!', { color: 'success' })
+            this.$emit('loggedIn')
+          } else {
+            this.$toast(response.data.status, { color: 'error' })
+            this.reset()
+          }
+        } catch (e) {
+          console.error('ID card login error', e)
+          this.$toast('Login failed', { color: 'error' })
+          this.reset()
+        }
       }
     },
     async beginTwoStepLogin () {
@@ -152,6 +169,9 @@ export default {
           country: this.country
         })
       } catch (e) {
+        console.error('Login error', e)
+        this.$toast('Login failed', { color: 'error' })
+        this.reset()
         return
       }
 
@@ -172,6 +192,8 @@ export default {
           this.reset()
         }
       } catch (e) {
+        console.error('Login error', e)
+        this.$toast('Login failed', { color: 'error' })
         this.reset()
       }
     }

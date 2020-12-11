@@ -30,7 +30,7 @@ class CreateContainerRequest extends FormRequest
         ];
 
         return [
-            'people'                   => 'required|array',
+            'people'                   => 'array',
             'people.*.identifier'      => 'required',
             'people.*.identifier_type' => 'required',
             'people.*.country'         => 'required',

@@ -18,12 +18,12 @@ export default {
     titleTemplate: '%s - signature-portal-front-end',
     title: 'signature-portal-front-end',
     meta: [
-      {charset: 'utf-8'},
-      {name: 'viewport', content: 'width=device-width, initial-scale=1'},
-      {hid: 'description', name: 'description', content: ''}
+      { charset: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { hid: 'description', name: 'description', content: '' }
     ],
     link: [
-      {rel: 'icon', type: 'image/x-icon', href: '/favicon.ico'}
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
 
@@ -72,7 +72,7 @@ export default {
 
   hooks: {
     generate: {
-      done(generator, errors) {
+      done (generator, errors) {
         // After generating, copy all files from public-base to public.
         // eslint-disable-next-line no-path-concat
         const files = fs.readdirSync(__dirname + '/../back-end/public-base/')
