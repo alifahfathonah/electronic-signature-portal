@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ContainerSigner;
 use App\Models\SignatureContainer;
 use App\Models\UnsignedFile;
 use App\Models\User;
@@ -15,13 +16,11 @@ use setasign\Fpdi\PdfParser\StreamReader;
 
 class SignatureController extends Controller
 {
-
-    public function applyVisualSignature(Request $request, SignatureContainer $container)
+    public function applyVisualSignature(Request $request, SignatureContainer $container, ContainerSigner $signer)
     {
         $request->validate([
             'visual_signature' => 'required',
             'identifier'       => 'required',
-            'identifier_type'  => 'required|in:email,idcode'
         ]);
 
         // Get container and file
@@ -73,7 +72,7 @@ class SignatureController extends Controller
 
         // Avoid race conditions
         if (Storage::lastModified($unsignedFile->storagePath()) != $lastModified) {
-            return $this->applyVisualSignature($request, $container);
+            return $this->applyVisualSignature($request, $container, $signer);
         }
 
         Storage::put($unsignedFile->storagePath(), $pdfContents);

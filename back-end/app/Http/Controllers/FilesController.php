@@ -6,6 +6,7 @@ use App\Http\Requests\Container\CreateContainerRequest;
 use App\Http\Requests\Container\DownloadFileRequest;
 use App\Http\Resources\ContainerResource;
 use App\Models\Company;
+use App\Models\ContainerSigner;
 use App\Models\SignatureContainer;
 use App\Models\UnsignedFile;
 use App\Models\User;
@@ -29,24 +30,17 @@ class FilesController extends Controller
         $container->security       = SignatureContainer::ACCESS_PUBLIC;
         $container->save();
 
-        $users             = [];
-        $users[Auth::id()] = ['access_level' => SignatureContainer::LEVEL_OWNER];
+        // TODO implement saving people
 
-        if ($request->has('people')) {
-            foreach ($request->input('people') as $person) {
-                $user = new User();
-                if ($person['identifier_type'] === 'email') {
-                    $user->email = $person['identifier'];
-                } else {
-                    $user->idcode  = $person['identifier'];
-                    $user->country = $person['country'];
-                }
-                $users[$user->id] = [
-                    'access_level'       => $person['access_level'],
-                    'visual_coordinates' => $person['visual_coordinates'] ?? null,
-                ];
+        if ($request->has('signers')) {
+            foreach ($request->input('signers') as $signer) {
+                $containerSigner                         = new ContainerSigner();
+                $containerSigner->identifier             = $signer['identifier'];
+                $containerSigner->identifier_type        = $signer['identifier_type'];
+                $containerSigner->country                = $signer['country'] ?? null;
+                $containerSigner->visual_coordinates     = $signer['visual_coordinates'] ?? null;
+                $containerSigner->signature_container_id = $container->id;
             }
-            $container->users()->attach($users);
         }
 
         if ($request->input('signature_type') === 'crypto') {

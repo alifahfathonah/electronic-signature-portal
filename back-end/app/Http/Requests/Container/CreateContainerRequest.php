@@ -30,21 +30,25 @@ class CreateContainerRequest extends FormRequest
         ];
 
         return [
-            'signature_type'                     => 'required|in:crypto,visual',
+            'signature_type'                      => 'required|in:crypto,visual',
+            'people'                              => 'array',
+            'people.*.identifier'                 => 'required',
+            'people.*.identifier_type'            => 'required',
+            'people.*.country'                    => 'required_if:people.*.identifier_type,idcode',
+            'people.*.access_level'               => 'required|in:' . implode(',', $accessLevels),
             'signers'                             => 'array',
             'signers.*.identifier'                => 'required',
             'signers.*.identifier_type'           => 'required',
             'signers.*.country'                   => 'required_if:people.*.identifier_type,idcode',
-            'signers.*.access_level'              => 'required|in:' . implode(',', $accessLevels),
             'signers.*.visual_coordinates.page'   => 'required_if:signature_type,visual|numeric|min:1',
             'signers.*.visual_coordinates.x'      => 'required_if:signature_type,visual|numeric|min:0',
             'signers.*.visual_coordinates.y'      => 'required_if:signature_type,visual|numeric|min:0',
             'signers.*.visual_coordinates.width'  => 'required_if:signature_type,visual|numeric|min:0',
             'signers.*.visual_coordinates.height' => 'required_if:signature_type,visual|numeric|min:0',
-            'files'                              => 'required|array|min:1',
-            'files.*.name'                       => 'required',
-            'files.*.content'                    => 'required',
-            'files.*.mime'                       => 'required',
+            'files'                               => 'required|array|min:1',
+            'files.*.name'                        => 'required',
+            'files.*.content'                     => 'required',
+            'files.*.mime'                        => 'required',
         ];
     }
 }

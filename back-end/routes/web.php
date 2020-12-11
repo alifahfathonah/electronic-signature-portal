@@ -4,6 +4,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FilesController;
 use App\Http\Controllers\PasswordLoginController;
+use App\Http\Controllers\SignatureController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,7 @@ Route::prefix('api')->group(function () {
     Route::post('signatures/get-idcard-token', 'SignatureController@getIdcardToken');
     Route::post('signatures/get-signature-digest', 'SignatureController@getSignatureDigest');
     Route::post('signatures/finish-signature', 'SignatureController@finishSignature');
+    Route::post('signatures/container/{container}/signer/{signer:public_id}/visual-sign', [SignatureController::class, 'applyVisualSignature']);
 
     Route::prefix('authenticate')->group(function () {
         Route::get('who-am-i', [AuthController::class, 'whoAmI']);
