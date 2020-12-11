@@ -90,6 +90,10 @@ class FilesController extends Controller
             $storagePath  = $this->getFileStoragePath($container->id, $name);
             Storage::put($storagePath, $fileContent);
 
+            $unsignedFile->name                   = $name;
+            $unsignedFile->mime_type              = $fileData['mime'];
+            $unsignedFile->storage_path           = $storagePath;
+            $unsignedFile->size                   = strlen($fileContent);
             $unsignedFile->signature_container_id = $container->id;
             $unsignedFile->save();
 
