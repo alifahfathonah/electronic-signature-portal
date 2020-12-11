@@ -26,8 +26,8 @@ Route::prefix('api')->group(function () {
 
     Route::post('/company', [CompanyController::class, 'store'])->middleware(['auth']);
 
-    Route::put('/company/{url_slug}/', [CompanyController::class, 'update'])->middleware(['company.admin']);
-    Route::post('/company/{url_slug}/container', [FilesController::class, 'createSignatureContainer'])->middleware(['company.admin']);
+    Route::put('/company/{company:url_slug}/', [CompanyController::class, 'update'])->middleware(['company.admin']);
+    Route::post('/company/{company:url_slug}/container', [FilesController::class, 'createSignatureContainer'])->middleware(['company.admin']);
 
     Route::get('/container/{container_id}', [FilesController::class, 'getContainerInfo'])->middleware(['container.can-read']);
     Route::get('/container/{container_id}/download', [FilesController::class, 'downloadFile'])->middleware(['container.can-read']);

@@ -12,35 +12,48 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class FilesController extends Controller
 {
-    public function createSignatureContainer(CreateContainerRequest $request)
+    public function createSignatureContainer(CreateContainerRequest $request, Company $company)
     {
         DB::beginTransaction();
 
         $container                 = new SignatureContainer();
         $container->container_type = "asice";
         $container->public_id      = Str::random(20);
-        $container->company_id     = Company::where('url_slug', $request->route('url_slug'))
-            ->firstOrFail()
-            ->id;
+        $container->company_id     = $company->id;
         $container->security       = SignatureContainer::ACCESS_PUBLIC;
         $container->save();
 
         $users             = [];
         $users[Auth::id()] = ['access_level' => SignatureContainer::LEVEL_OWNER];
-        // TODO implement email based access.
-        foreach ($request->input('people') as $person) {
-            $user             = User::firstOrCreate(['idcode' => $person['identifier'], 'country' => $person['country']]);
-            $users[$user->id] = ['access_level' => $person['access_level']];
+
+        if ($request->has('people')) {
+            foreach ($request->input('people') as $person) {
+                $user = new User();
+                if ($person['identifier_type'] === 'email') {
+                    $user->email = $person['identifier'];
+                } else {
+                    $user->idcode  = $person['identifier'];
+                    $user->country = $person['country'];
+                }
+                $users[$user->id] = [
+                    'access_level'       => $person['access_level'],
+                    'visual_coordinates' => $person['visual_coordinates'] ?? null,
+                ];
+            }
+            $container->users()->attach($users);
         }
 
-        $container->users()->attach($users);
-
-        $containerPath = $this->storeFiles($request, $container);
+        if ($request->input('signature_type') === 'crypto') {
+            $containerPath = $this->createAsiceContainer($request, $container);
+        } else {
+            $containerPath = $this->savePdf($request, $container);
+        }
 
         $container->container_path = $containerPath;
         $container->save();
@@ -67,7 +80,23 @@ class FilesController extends Controller
         ]);
     }
 
-    private function storeFiles(Request $request, SignatureContainer $container): string
+    private function savePdf(Request $request, SignatureContainer $container)
+    {
+        foreach ($request->input('files') as $fileData) {
+            // Store file.
+            $unsignedFile = new UnsignedFile();
+            $name         = $fileData['name'];
+            $fileContent  = base64_decode($fileData['content']);
+            $storagePath  = $this->getFileStoragePath($container->id, $name);
+            Storage::put($storagePath, $fileContent);
+            $unsignedFile->save();
+            return $storagePath; // There can be only one PDF
+        }
+        Log::error("Saving PDF and file missing");
+        return null;
+    }
+
+    private function createAsiceContainer(Request $request, SignatureContainer $container): string
     {
         $zip     = new \ZipArchive();
         $zipPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . Str::random();

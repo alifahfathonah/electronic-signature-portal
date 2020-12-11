@@ -15,8 +15,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $container_type
  * @property string|null $container_path
  * @property string $public_id
+ * @property string $security
  * @property UnsignedFile[] $files
  * @property User[] $users
+ * @property string $company_id
+ * @property Company $company
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  */
@@ -43,7 +46,7 @@ class SignatureContainer extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot(['access_level', 'signed_at']);
+        return $this->belongsToMany(User::class)->withPivot(['access_level', 'signed_at', 'visual_coordinates']);
     }
 
     public function company()

@@ -19,7 +19,7 @@ class OnlyCompanyAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        $ok = Company::where('url_slug', $request->route('url_slug'))
+        $ok = Company::where('id', $request->route('company')->id)
             ->whereHas('users', function ($q) {
                 $q->where('company_users.role', User::ROLE_ADMIN)
                     ->where('users.id', Auth::id());

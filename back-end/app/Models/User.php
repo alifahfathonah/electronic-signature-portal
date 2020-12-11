@@ -10,6 +10,8 @@ use Illuminate\Notifications\Notifiable;
  * Class User
  *
  * @package App\Models
+ * @property string $email
+ * @property string $password
  * @property string $idcode
  * @property string $country
  * @property string $first_name
@@ -31,11 +33,6 @@ class User extends Authenticatable
      */
     protected $fillable = ['idcode', 'country'];
 
-    /**
-     * Not used but just in case someone will add these fields
-     *
-     * @var array
-     */
     protected $hidden = [
         'password',
         'remember_token',
