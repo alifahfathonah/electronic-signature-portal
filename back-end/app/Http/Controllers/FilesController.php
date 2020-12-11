@@ -23,7 +23,7 @@ class FilesController extends Controller
         DB::beginTransaction();
 
         $container                 = new SignatureContainer();
-        $container->container_type = "asice";
+        $container->container_type = $request->input('signature_type') === 'crypto' ? "asice" : "pdf";
         $container->public_id      = Str::random(20);
         $container->company_id     = $company->id;
         $container->security       = SignatureContainer::ACCESS_PUBLIC;
@@ -89,7 +89,10 @@ class FilesController extends Controller
             $fileContent  = base64_decode($fileData['content']);
             $storagePath  = $this->getFileStoragePath($container->id, $name);
             Storage::put($storagePath, $fileContent);
+
+            $unsignedFile->signature_container_id = $container->id;
             $unsignedFile->save();
+
             return $storagePath; // There can be only one PDF
         }
         Log::error("Saving PDF and file missing");
@@ -120,15 +123,18 @@ XML;
             $unsignedFile = new UnsignedFile();
             $name         = $fileData['name'];
             $fileContent  = base64_decode($fileData['content']);
-            $storagePath  = $this->getFileStoragePath($container->id, $name);
-            Storage::put($storagePath, $fileContent);
 
             // Add file to the container.
             $unsignedFile->signature_container_id = $container->id;
             $unsignedFile->name                   = $name;
-            $unsignedFile->storage_path           = $storagePath;
-            $unsignedFile->size                   = Storage::size($storagePath);
-            $unsignedFile->mime_type              = $fileData['mime'];
+
+            $storagePath                = $unsignedFile->storagePath();
+            $unsignedFile->storage_path = $storagePath;
+            $unsignedFile->size         = Storage::size($storagePath);
+            $unsignedFile->mime_type    = $fileData['mime'];
+
+            Storage::put($storagePath, $fileContent);
+
             $unsignedFile->save();
             $zip->addFromString($name, $fileContent);
 

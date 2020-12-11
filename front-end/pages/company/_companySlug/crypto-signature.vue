@@ -11,7 +11,7 @@
             v-model="files"
             multiple
             :error-messages="$store.state.ui.validationErrors['files']"
-          ></v-file-input>
+          />
           <h3>Access control</h3>
           <p>Who can sign this document?</p>
           <v-radio-group
@@ -21,11 +21,11 @@
             <v-radio
               label="Anyone who has the link."
               value="public"
-            ></v-radio>
+            />
             <v-radio
               label="Only these people:"
               value="whitelist"
-            ></v-radio>
+            />
           </v-radio-group>
           <v-list>
             <v-list-item :disabled="accessControl !== 'whitelist'">
@@ -55,9 +55,13 @@
                 <v-list-item-content>
                   <v-list-item-title>
                     {{ person.identifier }}
-                    <template v-if="person.identifier_type === 'idcode'">({{ person.country }})</template>
+                    <template v-if="person.identifier_type === 'idcode'">
+                      ({{ person.country }})
+                    </template>
                   </v-list-item-title>
-                  <v-list-item-subtitle v-if="person.first_name">{{ person.first_name + ' ' + person.last_name }}</v-list-item-subtitle>
+                  <v-list-item-subtitle v-if="person.first_name">
+                    {{ person.first_name + ' ' + person.last_name }}
+                  </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action style="width: 198px;">
                   <v-select
@@ -66,7 +70,7 @@
                     background-color="#f1f1f1"
                     rounded
                     hide-details
-                  ></v-select>
+                  />
                 </v-list-item-action>
                 <v-list-item-action style="width: 36px; margin-left: 16px;">
                   <v-btn icon @click="removePerson(idx)">
@@ -87,7 +91,7 @@
               />
               <v-text-field
                 v-model="newPersonIdentifier"
-                :label="newPersonIdentifierType === 'idcode' ? 'Social security nr' : 'E-mail'"
+                :label="newPersonIdentifierType === 'idcode' ? 'Personal code' : 'E-mail'"
                 :disabled="accessControl !== 'whitelist'"
               />
               <v-select
@@ -105,7 +109,9 @@
                     :disabled="accessControl !== 'whitelist'"
                     @click="addPerson"
                   >
-                    <v-icon left>mdi-plus</v-icon>
+                    <v-icon left>
+                      mdi-plus
+                    </v-icon>
                     Add person
                   </v-btn>
                 </v-col>

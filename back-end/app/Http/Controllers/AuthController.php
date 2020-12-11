@@ -192,7 +192,7 @@ class AuthController extends Controller
         ]);
 
         if (!$response->ok()) {
-            return response()->json([], $response->status());
+            return response()->json($response->json(), $response->status());
         }
 
         $responseData = $response->json();

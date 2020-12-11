@@ -1,11 +1,6 @@
 <template>
   <div>
-    <nuxt v-if="$store.state.user.me"/>
-    <v-row v-else justify="center" align="center">
-      <v-col cols="12" sm="8" md="6">
-        <login-dialog-card :companySlug="$route.params.companySlug"/>
-      </v-col>
-    </v-row>
+    <nuxt v-if="$store.state.user.me" />
   </div>
 </template>
 

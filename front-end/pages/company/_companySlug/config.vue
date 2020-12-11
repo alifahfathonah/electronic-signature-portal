@@ -72,7 +72,7 @@
           <!--            </v-list-item>-->
           <!--          </v-list>-->
           <v-text-field
-            label="Social security number"
+            label="Personal code"
             disabled
           >
             <template slot="append">
@@ -117,7 +117,7 @@
           <!--            </v-list-item>-->
           <!--          </v-list>-->
           <v-text-field
-            label="Social security number"
+            label="Personal code"
             disabled
           >
             <template slot="append">

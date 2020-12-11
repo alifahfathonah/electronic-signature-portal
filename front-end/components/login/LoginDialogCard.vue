@@ -92,7 +92,6 @@ import LoginMethodList from '@/components/login/LoginMethodList'
 export default {
   components: { LoginMethodList },
   props: {
-    companySlug: String,
     isOpen: Boolean
   },
   data: () => ({
@@ -178,7 +177,6 @@ export default {
             this.reset()
           }
         } catch (e) {
-          console.error('ID card login error', e)
           this.$toast('Login failed', { color: 'error' })
           this.reset()
         }

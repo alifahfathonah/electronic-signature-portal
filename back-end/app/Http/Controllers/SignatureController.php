@@ -3,14 +3,84 @@
 namespace App\Http\Controllers;
 
 use App\Models\SignatureContainer;
+use App\Models\UnsignedFile;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use setasign\Fpdi\Fpdi;
+use setasign\Fpdi\PdfParser\StreamReader;
 
 class SignatureController extends Controller
 {
+
+    public function applyVisualSignature(Request $request, SignatureContainer $container)
+    {
+        $request->validate([
+            'visual_signature' => 'required',
+            'identifier'       => 'required',
+            'identifier_type'  => 'required|in:email,idcode'
+        ]);
+
+        // Get container and file
+        /** @var UnsignedFile $unsignedFile */
+        $unsignedFile = $container->files->first();
+        $lastModified = Storage::lastModified($unsignedFile->storagePath());
+
+        $pdf       = new Fpdi();
+        $pageCount = $pdf->setSourceFile(StreamReader::createByString(Storage::get($unsignedFile->storagePath())));
+
+        // Get signer
+        $identifier = $request->input('identifier');
+        $userType   = $request->input('identifier_type');
+        if ($userType === 'email') {
+            $user = User::where('email', $identifier);
+        } elseif ($userType === "idcode") {
+            $country = $request->input('country');
+            $user    = User::where('idcode', $identifier)->where('country', $country)->first();
+        }
+
+        foreach ($container->users as $containerUser) {
+            if ($containerUser->id === $user->id) {
+                $visualCoordinates = $containerUser->visual_coordinates;
+                break;
+            }
+        }
+
+        // Read whole PDF apply signature to correct page
+        for ($i = 0; $i <= $pageCount; $i++) {
+            $pdf->AddPage();
+            $imported = $pdf->importPage(1);
+            $pdf->useImportedPage($imported, 0, 0);
+
+            $tempPath = tempnam(sys_get_temp_dir(), 'eid_');
+            file_put_contents($tempPath, base64_decode($request->input('visual_signature')));
+
+            if ($i === $visualCoordinates['page']) {
+                $pdf->Image($tempPath,
+                    $visualCoordinates['x'],
+                    $visualCoordinates['y'],
+                    $visualCoordinates['width'],
+                    $visualCoordinates['height']
+                );
+            }
+        }
+
+        // Overwrite existing PDF if not changed
+        $pdfContents = $pdf->Output('S');
+
+        // Avoid race conditions
+        if (Storage::lastModified($unsignedFile->storagePath()) != $lastModified) {
+            return $this->applyVisualSignature($request, $container);
+        }
+
+        Storage::put($unsignedFile->storagePath(), $pdfContents);
+
+        return response()->json(['message' => 'Signature applied', 'pdf' => base64_encode($pdfContents)]);
+    }
+
     public function getIdcardToken()
     {
         // TODO error handling.
@@ -95,14 +165,13 @@ class SignatureController extends Controller
 </manifest:manifest>
 XML;
 
-        $manifest  = simplexml_load_string($manifestTemplate);
-        $namespace = 'urn:oasis:names:tc:opendocument:xmlns:manifest:1.0';
+        $manifest     = simplexml_load_string($manifestTemplate);
+        $namespace    = 'urn:oasis:names:tc:opendocument:xmlns:manifest:1.0';
         $newFileEntry = $manifest->addChild('file-entry');
         $newFileEntry->addAttribute('manifest:full-path', "test.pdf", $namespace);
         $newFileEntry->addAttribute('manifest:media-type', "application-pdf", $namespace);
 
         $zip->addFile('META-INF/manifest.xml', $manifest->asXML());
-
 
 
         $zip->addFromString("META-INF/manifest.xml", $manifest->asXML());

@@ -5,6 +5,7 @@ namespace App\Models;
 use Barryvdh\LaravelIdeHelper\Eloquent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 /**
  * Class SignatureContainer
@@ -16,8 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $container_path
  * @property string $public_id
  * @property string $security
- * @property UnsignedFile[] $files
- * @property User[] $users
+ * @property UnsignedFile[]|Collection $files
+ * @property User[]|Collection $users
  * @property string $company_id
  * @property Company $company
  * @property \Illuminate\Support\Carbon|null $created_at
