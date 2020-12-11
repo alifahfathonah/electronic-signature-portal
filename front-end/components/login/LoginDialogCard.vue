@@ -24,6 +24,24 @@
       </template>
 
       <!-- Ask for more details (smart-id or mobile-id) -->
+      <template v-if="method === 'password'">
+        <v-text-field
+          v-model="email"
+          type="email"
+          label="Email"
+          :disabled="disable"
+          :error-messages="$store.state.ui.validationErrors['email']"
+        />
+        <v-text-field
+          v-model="password"
+          type="password"
+          label="Password"
+          :disabled="disable"
+          :error-messages="$store.state.ui.validationErrors['password']"
+        />
+      </template>
+
+      <!-- Ask for more details (smart-id or mobile-id) -->
       <template v-if="twoStepPromptingMoreInfo">
         <v-text-field
           v-model="idCode"
@@ -54,12 +72,15 @@
       </template>
     </v-card-text>
     <v-card-actions>
-      <v-btn v-if="twoStepPromptingMoreInfo" @click="reset">
+      <v-btn v-if="!!method" @click="reset">
         Back
       </v-btn>
       <v-spacer />
       <v-btn v-if="twoStepPromptingMoreInfo" color="primary" @click="beginTwoStepLogin">
         Next
+      </v-btn>
+      <v-btn v-if="method==='password'" color="primary" @click="beginSimpleLogin">
+        Login
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -83,7 +104,11 @@ export default {
     // User details
     idCode: null,
     phoneNr: null,
-    country: null
+    country: null,
+
+    // Login details
+    email: null,
+    password: null
   }),
   computed: {
     twoStepPromptingMoreInfo () {
@@ -157,6 +182,30 @@ export default {
           this.$toast('Login failed', { color: 'error' })
           this.reset()
         }
+      }
+    },
+    async beginSimpleLogin () {
+      let response = null
+
+      try {
+        response = await this.$axios.post('api/password/login', {
+          email: this.email,
+          password: this.password
+        })
+      } catch (e) {
+        console.error('Login error', e)
+        this.$toast('Login failed: ' + e.response.data.message, { color: 'error' })
+        this.reset()
+        return
+      }
+
+      if (response.data.status === 'OK') {
+        this.$store.commit('user/setMe', { me: response.data.user })
+        this.$toast('Logged in!', { color: 'success' })
+        this.$emit('loggedIn')
+      } else {
+        this.$toast(response.data.status, { color: 'error' })
+        this.reset()
       }
     },
     async beginTwoStepLogin () {

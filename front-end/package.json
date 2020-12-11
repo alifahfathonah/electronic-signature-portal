@@ -17,9 +17,11 @@
     "clipboard-copy": "^4.0.1",
     "core-js": "^3.6.5",
     "nuxt": "^2.14.6",
+    "vue-pdf": "^4.2.0",
     "vuetify-toast-snackbar": "^0.6.1"
   },
   "devDependencies": {
+    "@nuxt/types": "^2.14.11",
     "@nuxtjs/eslint-config": "^3.1.0",
     "@nuxtjs/eslint-module": "^2.0.0",
     "@nuxtjs/vuetify": "^1.11.2",

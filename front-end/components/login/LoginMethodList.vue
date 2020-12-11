@@ -19,6 +19,9 @@
       <v-btn class="login-method-btn" elevation="1" @click="$emit('selectMethod', 'id-card', 'BE')">
         Belgian ID card
       </v-btn>
+      <v-btn @click="$emit('selectMethod', 'password')" class="login-method-btn" elevation="1">
+        Login with Password
+      </v-btn>
     </v-col>
   </v-row>
 </template>
