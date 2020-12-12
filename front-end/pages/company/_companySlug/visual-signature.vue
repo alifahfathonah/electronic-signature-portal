@@ -143,7 +143,7 @@ export default {
         return
       }
       this.signers.push(newSigner)
-      newSigner['view-id'] = this.$refs['pdf-preview'].addItemOnPdf('signature', this.newPersonIdentifier)
+      newSigner.view_id = this.$refs['pdf-preview'].addItemOnPdf('signature', this.newPersonIdentifier)
       this.$toast('Person added: ' + newSigner.identifier)
       this.newPersonIdentifier = ''
     },
