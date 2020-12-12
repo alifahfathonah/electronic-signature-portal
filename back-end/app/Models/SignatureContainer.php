@@ -69,15 +69,15 @@ class SignatureContainer extends Model
 
         $pdf->AddPage();
         $pdf->Ln();
-        foreach ($this->signers as $signer) {
-            $pdf->SetFontSize(20);
-            $pdf->Write(26, "Signer $signer->identifier: \n");
-            $pdf->SetFontSize(14);
-            foreach ($signer->auditTrail as $trail) {
-                $pdf->Write(20, "Time: $trail->created_at, IP=$trail->id, Action: $trail->identifier, Device info= " . $trail->system_info['browser_name_pattern'] . "\n");
-            }
-            $pdf->Ln();
-        }
+//        foreach ($this->signers as $signer) {
+//            $pdf->SetFontSize(20);
+//            $pdf->Write(26, "Signer $signer->identifier: \n");
+//            $pdf->SetFontSize(14);
+//            foreach ($signer->auditTrail as $trail) {
+//                $pdf->Write(20, "Time: $trail->created_at, IP=$trail->id, Action: $trail->identifier, Device info= " . $trail->system_info['browser_name_pattern'] . "\n");
+//            }
+//            $pdf->Ln();
+//        }
 
         // Overwrite existing PDF if not changed
         $pdfContents = $pdf->Output('S');

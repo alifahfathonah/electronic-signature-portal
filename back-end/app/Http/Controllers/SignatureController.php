@@ -22,6 +22,7 @@ class SignatureController extends Controller
         $request->validate([
             'visual_signature' => 'required',
             'identifier'       => 'required',
+            'identifier_type'  => 'required:in:email',
         ]);
 
         if ($signer->signed_at) {
@@ -40,14 +41,19 @@ class SignatureController extends Controller
         // Get signer
         $identifier = $request->input('identifier');
         $userType   = $request->input('identifier_type');
-        if ($userType === 'email') {
-            $user = User::where('email', $identifier);
-        } elseif ($userType === "idcode") {
-            $country = $request->input('country');
-            $user    = User::where('idcode', $identifier)->where('country', $country)->first();
+
+        $signerQuery = ContainerSigner::where('signature_container_id', $container->id)->where('identifier_type', $userType)->where('identifier', $identifier);
+
+        $country = $request->input('country');
+        if ($country) {
+            $signerQuery = $signerQuery->where('country', $country);
         }
 
-        foreach ($container->users as $containerUser) {
+        $user = $signerQuery->first();
+        info("User on $user");
+
+        foreach ($container->signers as $containerUser) {
+            info('Container user', $containerUser->toArray());
             if ($containerUser->id === $user->id) {
                 $visualCoordinates = $containerUser->visual_coordinates;
                 break;
@@ -68,7 +74,8 @@ class SignatureController extends Controller
                     $visualCoordinates['x'],
                     $visualCoordinates['y'],
                     $visualCoordinates['width'],
-                    $visualCoordinates['height']
+                    $visualCoordinates['height'],
+                    'PNG'
                 );
             }
         }
@@ -100,9 +107,9 @@ class SignatureController extends Controller
             }
         }
 
-        if ($allSigned) {
-            $container->addConfirmationPage();
-        }
+//        if ($allSigned) {
+        $container->addConfirmationPage();
+//        }
 
         return Storage::download($unsignedFile->storagePath());
     }

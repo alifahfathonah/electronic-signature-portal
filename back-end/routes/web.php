@@ -41,7 +41,7 @@ Route::prefix('api')->group(function () {
     Route::post('signatures/get-idcard-token', 'SignatureController@getIdcardToken');
     Route::post('signatures/get-signature-digest', 'SignatureController@getSignatureDigest');
     Route::post('signatures/finish-signature', 'SignatureController@finishSignature');
-    Route::post('signatures/container/{container}/signer/{signer:public_id}/visual-sign', [SignatureController::class, 'applyVisualSignature']);
+    Route::post('signatures/container/{container:public_id}/signer/{signer:public_id}/visual-sign', [SignatureController::class, 'applyVisualSignature']);
 
     Route::prefix('authenticate')->group(function () {
         Route::get('who-am-i', [AuthController::class, 'whoAmI']);
