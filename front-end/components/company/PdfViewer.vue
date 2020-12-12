@@ -17,7 +17,6 @@
           <div v-if="item.title" class="signature-header">
             {{ item.title }}
           </div>
-          <img src="/signature.png" style="max-width: 100%; max-height: 100%" alt="">
         </Moveable>
         <v-row v-for="i of numPages" :key="i" class="pdf-page mb-6">
           <pdf

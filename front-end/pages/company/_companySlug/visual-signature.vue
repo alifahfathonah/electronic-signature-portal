@@ -125,9 +125,7 @@ export default {
         width: 50,
         height: 10
       }
-      const viewID = this.$refs['pdf-preview'].addItemOnPdf('signature', this.newPersonIdentifier)
       const newSigner = {
-        view_id: viewID,
         identifier_type: 'email',
         identifier: this.newPersonIdentifier,
         access_level: 'signer',
@@ -145,6 +143,7 @@ export default {
         return
       }
       this.signers.push(newSigner)
+      newSigner['view-id'] = this.$refs['pdf-preview'].addItemOnPdf('signature', this.newPersonIdentifier)
       this.$toast('Person added: ' + newSigner.identifier)
       this.newPersonIdentifier = ''
     },
@@ -158,9 +157,9 @@ export default {
       // TODO: Do something with coordinates, here is extraction from pdf-viewer
       const coordinates = this.$refs['pdf-preview'].getCoordinates()
       console.log(coordinates)
-      const map = this.signers.map(signer => coordinates[signer.view_id])
-      console.log(map)
-      // END of TODO
+      this.signers.forEach((signer) => {
+        signer.visual_coordinates = coordinates[signer.view_id]
+      })
 
       const read = new FileReader()
       read.readAsDataURL(this.file)
