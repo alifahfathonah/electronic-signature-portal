@@ -3,7 +3,7 @@
     <h1>Add your signature</h1>
     <v-container>
       Here is PDF file content
-      <VisualSigning v-if="signer!==null" :visual-coordinates="signer.visual_coordinates" ref="pdf-signing"/>
+      <VisualSigning v-if="signer!==null" ref="pdf-signing" :visual-coordinates="signer.visual_coordinates"/>
     </v-container>
     <v-btn
       color="primary"
@@ -28,7 +28,7 @@ export default {
       signer: null
     }
   },
-  created () {
+  mounted () {
     this.$axios.$post(
       `api/signatures/container/${this.$route.params.containerId}/signer/${this.$route.params.signerId}/files`, {
         visual_signature: 'visual'

@@ -13,13 +13,14 @@
           <div v-if="signatureBox.title" class="signature-header">
             {{ signatureBox.title }}
           </div>
-          <img v-if="placeholder" :src="placeholder" style="max-width: 100%; max-height: 100%" alt="">
+          <img v-if="placeholder" :src="placeholder" class="signature-item" alt="">
         </Moveable>
-        <v-row v-for="i of numPages" :key="i" class="pdf-page mb-6">
+        <v-row v-for="i of numPages" :key="i" class="pdf-page mb-6 mx-0">
           <pdf
             :page="i"
             :src="document"
             style="width: 100%"
+            @page-loaded="pdfLoaded(i)"
           />
         </v-row>
       </div>
@@ -33,12 +34,12 @@
       <v-card style="opacity: 0.95">
         <v-card-text class="pt-5">
           <div class="d-block" style="background-color: #eee">
-            <VueSignaturePad id="signature" ref="signaturePad" width="100%" height="240px"/>
+            <VueSignaturePad id="signature" ref="signaturePad" width="100%" height="240px" />
           </div>
         </v-card-text>
-        <v-divider/>
+        <v-divider />
         <v-card-actions>
-          <v-spacer/>
+          <v-spacer />
           <v-btn color="secondary" text @click="clearSignature">
             Clear
           </v-btn>
@@ -52,7 +53,6 @@
 </template>
 
 <script>
-/* eslint-disable */
 import Vue from 'vue'
 import pdf from 'vue-pdf'
 import VueSignature from 'vue-signature-pad'
@@ -62,8 +62,8 @@ Vue.use(VueSignature)
 
 export default {
   name: 'VisualSigning',
-  props: ['visualCoordinates'],
   components: { pdf, Moveable },
+  props: ['visualCoordinates'],
   data: () => ({
     widthRef: 210,
     heightRef: 297,
@@ -79,7 +79,7 @@ export default {
     signatureLocation () {
       if (!this.pdfPage) {
         return {
-          x: -12,
+          x: 0,
           y: 0,
           width: 100,
           height: 100
@@ -91,9 +91,8 @@ export default {
       const xDpi = rect.width / this.widthRef
       const yDpi = rect.height / this.heightRef
 
-      console.log('DPI-d', xDpi, yDpi, rect.width, rect.height)
       return {
-        x: xDpi * this.visualCoordinates.x - 12,
+        x: xDpi * this.visualCoordinates.x,
         y: yDpi * this.visualCoordinates.y,
         width: xDpi * this.visualCoordinates.width,
         height: yDpi * this.visualCoordinates.height
@@ -101,43 +100,50 @@ export default {
     }
   },
   methods: {
-    async loadPdf (file, coords) {
-      console.log('Loading PDF')
+    alert (msg) {
+      if (msg === undefined) { msg = 'Undefined' }
+      if (msg === '') { msg = 'Empty String' }
+      alert(msg)
+    },
+    loadPdf (file, coords) {
       this.counter = 0
       this.currentItem = null
       this.dragItems = []
       this.document = null
-      console.log(file)
       if (!file) {
         return
       }
 
       this.document = pdf.createLoadingTask('data:application/pdf;base64,' + file)
-      console.log('Starting promise')
       this.document.promise.then((pdf) => {
-        console.log('Promise completed')
-        const viewer = document.querySelector('#pdf-viewer-outer')
-
         this.numPages = pdf.numPages
-        this.signatureBox = {
-          title: 'Sign here',
-          moveable: {
-            draggable: true,
-            container: viewer,
-            translateZ: 0
-          }
-        }
-        this.$nextTick(() => {
-          const allPages = Array.from(document.body.querySelectorAll('.pdf-page')).map(v => v.getBoundingClientRect())
-          console.log('All pages on', allPages)
-          this.pdfPage = allPages[this.visualCoordinates.page - 1]
+      })
+    },
+    pdfLoaded (page) {
+      if (page !== this.numPages) {
+        return
+      }
 
-          this.signPadDisabled = true
-          // TODO: make calculations to find offset, don't forget -12px on x axis(hidden padding from vue-pdf)
-          this.$refs['signatureHolder'].request('draggable', { deltaX: this.signatureLocation.x, deltaY: this.signatureLocation.y }, true)
-          this.$refs['signatureHolder'].request('resizable', { offsetWidth: this.signatureLocation.width, offsetHeight: this.signatureLocation.height }, true)
-          this.signPadDisabled = false
-        })
+      const viewer = document.querySelector('#pdf-viewer-outer')
+      this.signatureBox = {
+        title: 'Sign here',
+        moveable: {
+          draggable: true,
+          container: viewer
+        }
+      }
+      const allPages = Array.from(document.body.querySelectorAll('.pdf-page')).map(v => v.getBoundingClientRect())
+      this.pdfPage = allPages[this.visualCoordinates.page - 1]
+      const pageOffset = this.pdfPage.top - allPages[0].top
+
+      this.$nextTick(() => {
+        this.signPadDisabled = true
+        this.$refs.signatureHolder.$el.style.left = this.signatureLocation.x + 'px'
+        this.$refs.signatureHolder.$el.style.top = (this.signatureLocation.y + pageOffset) + 'px'
+        this.$refs.signatureHolder.$el.style.width = this.signatureLocation.width + 'px'
+        this.$refs.signatureHolder.$el.style.height = this.signatureLocation.height + 'px'
+        this.$refs.signatureHolder.updateRect()
+        this.signPadDisabled = false
       })
     },
     handleDrag ({ target, transform }) {
@@ -160,7 +166,11 @@ export default {
     saveSignature () {
       this.signPad = false
       const { isEmpty, data } = this.$refs.signaturePad.saveSignature()
-      this.placeholder = data
+      if (!isEmpty) {
+        this.placeholder = data
+      } else {
+        this.placeholder = null
+      }
     }
   }
 }
@@ -174,13 +184,15 @@ export default {
 
 #pdf-viewer-outer {
   position: relative;
-  overflow-y: visible;
+  max-height: 85vh;
+  overflow-y: scroll;
   background: #f1f1f1;
-  padding: 20px 0;
+  padding: 20px;
 }
 
 #pdf-viewer {
-  padding: 0 32px;
+  position: relative;
+  padding: 0 ;
   min-height: 400px;
   min-width: 100%;
 }
@@ -205,6 +217,11 @@ export default {
   color: #ddd;
   background: #0d408e;
   opacity: 0.6;
+}
 
+.signature-item{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 </style>
