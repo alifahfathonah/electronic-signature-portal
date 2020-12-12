@@ -1,9 +1,13 @@
 export const state = () => ({
   companies: [],
-  selectedCompany: null
+  selectedCompany: null,
+  pendingCompany: null
 })
 
 export const mutations = {
+  setPendingCompany (state, { slug }) {
+    state.pendingCompany = slug
+  },
   setCompanies (state, { companies }) {
     state.companies = companies
   },
@@ -15,6 +19,7 @@ export const mutations = {
 export const actions = {
   async createCompany ({ commit }, properties) {
     const response = await this.$axios.$post('api/company/', properties)
+    commit('setPendingCompany', { slug: null })
 
     commit('setCompanies', { companies: response.companies })
   }

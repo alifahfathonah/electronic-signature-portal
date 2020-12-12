@@ -27,7 +27,6 @@ class FilesController extends Controller
         $container->container_type = $request->input('signature_type') === 'crypto' ? "asice" : "pdf";
         $container->public_id      = Str::random(20);
         $container->company_id     = $company->id;
-        $container->security       = SignatureContainer::ACCESS_PUBLIC;
         $container->save();
 
         // TODO implement saving people

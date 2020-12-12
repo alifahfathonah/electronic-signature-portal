@@ -17,7 +17,7 @@
           />
         </v-card-text>
         <v-card-actions>
-          <v-spacer />
+          <v-spacer/>
           <v-btn
             color="primary"
             nuxt
@@ -64,6 +64,8 @@ export default {
           params: {
             url_slug: this.url_slug
           }
+        }).then(() => {
+          this.$store.commit('company/setPendingCompany', { slug: this.url_slug })
         })
       } catch (e) {
         // If slug is taken, validation error is thrown and we return.
@@ -71,24 +73,14 @@ export default {
       }
 
       // If we are logged in, attempt to register slug.
-      if (this.$store.state.user.me) {
-        this.createCompany()
-      } else {
+      if (!this.$store.state.user.me) {
         this.showLoginDialog = true
+      } else {
+        this.$router.push('/select-company')
       }
     },
     loggedIn () {
       this.showLoginDialog = false
-      this.createCompany()
-    },
-    async createCompany () {
-      this.creatingCompany = true
-
-      await this.$store.dispatch('company/createCompany', {
-        url_slug: this.url_slug
-      })
-
-      this.$router.push(`company/${this.url_slug}/config`)
     }
   }
 }

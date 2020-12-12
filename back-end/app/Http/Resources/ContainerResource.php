@@ -19,9 +19,9 @@ class ContainerResource extends JsonResource
     {
         /** @var $this SignatureContainer */
         $data                 = parent::toArray($request);
-        $data['access_level'] = $this->users->first(function (User $user) {
-                return $user->id === Auth::id();
-            })->pivot->access_level ?? SignatureContainer::LEVEL_SIGNER;
+//        $data['access_level'] = $this->signers->first(function (User $user) {
+//                return $user->id === Auth::id();
+//            })->pivot->access_level ?? SignatureContainer::LEVEL_SIGNER;
 
         $files = [];
         foreach ($this->files as $file) {
@@ -34,21 +34,21 @@ class ContainerResource extends JsonResource
 
         $data['files'] = $files;
 
-        $users = [];
+        $signers = [];
 
-        foreach ($this->users as $user) {
-            $users[] = [
-                'id'           => $user->id,
-                'country'      => $user->country,
-                'first_name'   => $user->first_name,
-                'last_name'    => $user->last_name,
-                'idcode'       => $user->idcode,
-                'access_level' => $user->pivot->access_level,
-                'signed_at'    => $user->pivot->signed_at,
-            ];
-        }
+//        foreach ($this->signers as $user) {
+//            $signers[] = [
+//                'id'           => $user->id,
+//                'country'      => $user->country,
+//                'first_name'   => $user->first_name,
+//                'last_name'    => $user->last_name,
+//                'idcode'       => $user->idcode,
+//                'access_level' => $user->pivot->access_level,
+//                'signed_at'    => $user->pivot->signed_at,
+//            ];
+//        }
 
-        $data['users'] = $users;
+        $data['signers'] = $signers;
 
         return $data;
     }

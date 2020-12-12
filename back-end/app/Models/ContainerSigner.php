@@ -22,4 +22,6 @@ use Illuminate\Database\Eloquent\Model;
 class ContainerSigner extends Model
 {
     use HasFactory;
+
+    protected $casts = ['visual_coordinates' => 'array'];
 }

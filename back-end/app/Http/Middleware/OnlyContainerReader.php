@@ -18,11 +18,11 @@ class OnlyContainerReader
      */
     public function handle(Request $request, Closure $next)
     {
+        // TODO implement idcode based access restriction for signatures
+        return $next($request);
+
         $containerId = $request->route('container_id');
         $container   = SignatureContainer::where('public_id', $containerId)->firstOrFail();
-        if ($container->security === SignatureContainer::ACCESS_PUBLIC) {
-            return $next($request);
-        }
 
         if (Auth::check()) {
             $ok = $container->users()->where('user_id', Auth::id())->exists();

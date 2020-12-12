@@ -16,7 +16,6 @@ use Illuminate\Support\Collection;
  * @property string $container_type
  * @property string|null $container_path
  * @property string $public_id
- * @property string $security
  * @property UnsignedFile[]|Collection $files
  * @property User[]|Collection $users
  * @property string $company_id
@@ -45,9 +44,9 @@ class SignatureContainer extends Model
         return $this->hasMany(UnsignedFile::class);
     }
 
-    public function users()
+    public function signers()
     {
-        return $this->belongsToMany(User::class)->withPivot(['access_level', 'signed_at', 'visual_coordinates']);
+        return $this->hasMany(ContainerSigner::class);
     }
 
     public function company()
