@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center" align="center">
+  <v-row justify="center">
     <v-col cols="12" sm="8" md="6">
       <v-card>
         <v-card-title class="headline">
@@ -62,7 +62,7 @@
           <br>
         </v-card-text>
         <v-card-actions>
-          <v-spacer/>
+          <v-spacer />
           <v-btn
             color="primary"
             nuxt
@@ -75,8 +75,11 @@
     </v-col>
     <v-col>
       <v-card>
-        <v-card-text>
+        <v-card-title>
           PDF preview
+        </v-card-title>
+        <v-card-text>
+          <PdfViewer ref="pdf-preview" />
         </v-card-text>
       </v-card>
     </v-col>
@@ -84,8 +87,11 @@
 </template>
 
 <script>
+import PdfViewer from '@/components/company/PdfViewer.vue'
+
 export default {
   name: 'VisualSignatureVue',
+  components: { PdfViewer },
   data: () => ({
     file: null,
     signers: [],
@@ -105,6 +111,11 @@ export default {
       return this.$store.state.user.me
     }
   },
+  watch: {
+    file (val) {
+      this.$refs['pdf-preview'].loadPdf(val)
+    }
+  },
   methods: {
     addPerson () {
       const visualCoordinates = {
@@ -114,7 +125,9 @@ export default {
         width: 50,
         height: 10
       }
+      const viewID = this.$refs['pdf-preview'].addItemOnPdf('signature', this.newPersonIdentifier)
       const newSigner = {
+        view_id: viewID,
         identifier_type: 'email',
         identifier: this.newPersonIdentifier,
         access_level: 'signer',
@@ -136,10 +149,18 @@ export default {
       this.newPersonIdentifier = ''
     },
     removePerson (idx) {
+      this.$refs['pdf-preview'].deleteItem(this.signers[idx].view_id)
       this.signers.splice(idx, 1)
     },
     async submit () {
       const files = []
+
+      // TODO: Do something with coordinates, here is extraction from pdf-viewer
+      const coordinates = this.$refs['pdf-preview'].getCoordinates()
+      console.log(coordinates)
+      const map = this.signers.map(signer => coordinates[signer.view_id])
+      console.log(map)
+      // END of TODO
 
       const read = new FileReader()
       read.readAsDataURL(this.file)
