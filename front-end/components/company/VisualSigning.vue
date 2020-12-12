@@ -77,7 +77,7 @@ export default {
   }),
   computed: {
     signatureLocation () {
-      if (!pdfPage) {
+      if (!this.pdfPage) {
         return {
           x: -12,
           y: 0,
