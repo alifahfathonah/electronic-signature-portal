@@ -40,6 +40,7 @@
             <v-card-text>
               <v-text-field
                 v-model="newPersonIdentifier"
+                :rules="[rules.required, rules.email]"
                 label="E-mail"
               />
               <v-row>
@@ -72,6 +73,13 @@
         </v-card-actions>
       </v-card>
     </v-col>
+    <v-col>
+      <v-card>
+        <v-card-text>
+          PDF preview
+        </v-card-text>
+      </v-card>
+    </v-col>
   </v-row>
 </template>
 
@@ -81,6 +89,13 @@ export default {
   data: () => ({
     file: null,
     people: [],
+    rules: {
+      required: value => !!value || 'Required.',
+      email: value => {
+        const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        return pattern.test(value) || 'Invalid e-mail.'
+      }
+    },
     accessControl: 'public',
     newPersonIdentifierType: 'idcode',
     newPersonIdentifier: ''
