@@ -94,7 +94,6 @@ export default {
     counter: 0,
     numPages: null,
     document: null,
-    // document: pdf.createLoadingTask('/3-pages.pdf'), // TODO: feed pdf dynamically
     dragItems: [],
     currentItem: null
   }),

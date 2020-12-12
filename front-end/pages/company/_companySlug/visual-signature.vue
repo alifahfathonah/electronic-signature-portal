@@ -156,7 +156,6 @@ export default {
 
       // TODO: Do something with coordinates, here is extraction from pdf-viewer
       const coordinates = this.$refs['pdf-preview'].getCoordinates()
-      console.log(coordinates)
       this.signers.forEach((signer) => {
         signer.visual_coordinates = coordinates[signer.view_id]
       })
