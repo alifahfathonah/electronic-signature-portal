@@ -86,11 +86,12 @@ export default {
         }
       }
 
-      const rect = pdfPage.getBoundingClientRect()
+      const rect = this.pdfPage
 
       const xDpi = rect.width / this.widthRef
       const yDpi = rect.height / this.heightRef
 
+      console.log('DPI-d', xDpi, yDpi, rect.width, rect.height)
       return {
         x: xDpi * this.visualCoordinates.x - 12,
         y: yDpi * this.visualCoordinates.y,
@@ -101,6 +102,7 @@ export default {
   },
   methods: {
     async loadPdf (file, coords) {
+      console.log('Loading PDF')
       this.counter = 0
       this.currentItem = null
       this.dragItems = []
@@ -111,11 +113,10 @@ export default {
       }
 
       this.document = pdf.createLoadingTask('data:application/pdf;base64,' + file)
+      console.log('Starting promise')
       this.document.promise.then((pdf) => {
+        console.log('Promise completed')
         const viewer = document.querySelector('#pdf-viewer-outer')
-
-        const allPages = Array.from(document.body.querySelectorAll('.pdf-page')).map(v => v.getBoundingClientRect())
-        this.pdfPage = allPages[this.visualCoordinates.page-1]
 
         this.numPages = pdf.numPages
         this.signatureBox = {
@@ -127,6 +128,10 @@ export default {
           }
         }
         this.$nextTick(() => {
+          const allPages = Array.from(document.body.querySelectorAll('.pdf-page')).map(v => v.getBoundingClientRect())
+          console.log('All pages on', allPages)
+          this.pdfPage = allPages[this.visualCoordinates.page - 1]
+
           this.signPadDisabled = true
           // TODO: make calculations to find offset, don't forget -12px on x axis(hidden padding from vue-pdf)
           this.$refs['signatureHolder'].request('draggable', { deltaX: this.signatureLocation.x, deltaY: this.signatureLocation.y }, true)
@@ -169,8 +174,7 @@ export default {
 
 #pdf-viewer-outer {
   position: relative;
-  max-height: 75vh;
-  overflow-y: scroll;
+  overflow-y: visible;
   background: #f1f1f1;
   padding: 20px 0;
 }

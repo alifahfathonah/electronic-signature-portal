@@ -3,7 +3,7 @@
     <h1>Add your signature</h1>
     <v-container>
       Here is PDF file content
-      <VisualSigning v-if="signer!==null" visual-coordinates="signer.visual_coordinates" ref="pdf-signing"/>
+      <VisualSigning v-if="signer!==null" :visual-coordinates="signer.visual_coordinates" ref="pdf-signing"/>
     </v-container>
     <v-btn
       color="primary"
