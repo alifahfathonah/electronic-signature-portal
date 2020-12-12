@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 
 /**
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $identifier_type
  * @property string|null $country
  * @property array|null $visual_coordinates
- * @property array|null $activity_log
+ * @property AuditTrail[]|Collection|null $audit_trail
  * @property \Illuminate\Support\Carbon|null $signed_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -29,4 +30,9 @@ class ContainerSigner extends Model
         'visual_coordinates' => 'array',
         'activity_log'       => 'array',
     ];
+
+    public function auditTrail()
+    {
+        return $this->hasMany(AuditTrail::class)->orderBy('created_at');
+    }
 }

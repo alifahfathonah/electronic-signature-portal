@@ -6,6 +6,9 @@ use Barryvdh\LaravelIdeHelper\Eloquent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
+use setasign\Fpdi\Fpdi;
+use setasign\Fpdi\PdfParser\StreamReader;
 
 /**
  * Class SignatureContainer
@@ -47,5 +50,40 @@ class SignatureContainer extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+
+    public function addConfirmationPage()
+    {
+        $pdf          = new Fpdi();
+        $unsignedFile = $this->files->first();
+
+        $pageCount = $pdf->setSourceFile(StreamReader::createByString(Storage::get($unsignedFile->storagePath())));
+
+        // Read whole PDF apply signature to correct page
+        for ($i = 0; $i <= $pageCount; $i++) {
+            $pdf->AddPage();
+            $imported = $pdf->importPage(1);
+            $pdf->useImportedPage($imported, 0, 0);
+        }
+
+        $pdf->AddPage();
+        $pdf->Ln();
+        foreach ($this->signers as $signer) {
+            $pdf->SetFontSize(20);
+            $pdf->Write(26, "Signer $signer->identifier: \n");
+            $pdf->SetFontSize(14);
+            foreach ($signer->auditTrail as $trail) {
+                $pdf->Write(20, "Time: $trail->created_at, IP=$trail->id, Action: $trail->identifier, Device info= " . $trail->system_info['browser_name_pattern'] . "\n");
+            }
+            $pdf->Ln();
+        }
+
+        // Overwrite existing PDF if not changed
+        $pdfContents = $pdf->Output('S');
+
+        Storage::put($unsignedFile->storagePath(), $pdfContents);
+
+        info("Confirmation page created for $this->public_id");
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Requests\Container\CreateContainerRequest;
 use App\Http\Requests\Container\DownloadFileRequest;
 use App\Http\Resources\ContainerResource;
 use App\Mail\SignatureRequested;
+use App\Models\AuditTrail;
 use App\Models\Company;
 use App\Models\ContainerSigner;
 use App\Models\SignatureContainer;
@@ -35,6 +36,12 @@ class FilesController extends Controller
                 'content' => base64_encode(Storage::get($file->storagePath())),
             ];
         }
+
+        $trail                      = new AuditTrail();
+        $trail->container_signer_id = $signer->id;
+        $trail->ip                  = $request->ip();
+        $trail->action_type         = AuditTrail::ACTION_OPENED;
+        $trail->save();
 
         return response()->json([
             'files'  => $returnFiles,
@@ -82,8 +89,14 @@ class FilesController extends Controller
                 $containerSigner->save();
                 if ($containerSigner->identifier_type === "email") {
                     info("Sending notification e-mail to " . $containerSigner->identifier);
-                    $url = env('APP_URL') . "/signatures/container/$container->public_id/signer/$containerSigner->public_id";
+                    $url = env('APP_URL') . "/signatures/$container->public_id/signer/$containerSigner->public_id";
                     Mail::to($containerSigner->identifier)->send(new SignatureRequested($url));
+
+                    $trail                      = new AuditTrail();
+                    $trail->container_signer_id = $containerSigner->id;
+                    $trail->ip                  = $request->ip();
+                    $trail->action_type         = AuditTrail::ACTION_SENT;
+                    $trail->save();
                 }
             }
         }

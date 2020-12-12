@@ -18,6 +18,8 @@ class CreateAuditTrailsTable extends Migration
             $table->string('action_type');
             $table->string('ip');
             $table->json('system_info');
+            $table->bigInteger('container_signer_id')->unsigned();
+            $table->foreign('container_signer_id')->references('id')->on('container_signers');
             $table->timestamps();
         });
     }

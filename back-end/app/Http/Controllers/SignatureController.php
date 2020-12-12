@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditTrail;
 use App\Models\ContainerSigner;
 use App\Models\SignatureContainer;
 use App\Models\UnsignedFile;
@@ -22,6 +23,11 @@ class SignatureController extends Controller
             'visual_signature' => 'required',
             'identifier'       => 'required',
         ]);
+
+        if ($signer->signed_at) {
+            info("$signer->identifier already signed container $container->public_id");
+            abort(403, 'Already signed');
+        }
 
         // Get container and file
         /** @var UnsignedFile $unsignedFile */
@@ -75,9 +81,30 @@ class SignatureController extends Controller
             return $this->applyVisualSignature($request, $container, $signer);
         }
 
+        $signer->signed_at = now();
+        $signer->save();
+
+        $trail                      = new AuditTrail();
+        $trail->container_signer_id = $signer->id;
+        $trail->ip                  = $request->ip();
+        $trail->action_type         = AuditTrail::ACTION_SIGNED;
+        $trail->save();
+
         Storage::put($unsignedFile->storagePath(), $pdfContents);
 
-        return response()->json(['message' => 'Signature applied', 'pdf' => base64_encode($pdfContents)]);
+        $allSigned = true;
+        foreach ($container->signers as $containerSigner) {
+            if (!$containerSigner->signed_at) {
+                $allSigned = false;
+                break;
+            }
+        }
+
+        if ($allSigned) {
+            $container->addConfirmationPage();
+        }
+
+        return Storage::download($unsignedFile->storagePath());
     }
 
     public function getIdcardToken()

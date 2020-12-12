@@ -22,9 +22,6 @@ class ContainerResource extends JsonResource
             'container_type' => $this->container_type,
             'public_id'      => $this->public_id,
         ];
-//        $data['access_level'] = $this->signers->first(function (User $user) {
-//                return $user->id === Auth::id();
-//            })->pivot->access_level ?? SignatureContainer::LEVEL_SIGNER;
 
         $files = [];
         foreach ($this->files as $file) {
@@ -44,8 +41,6 @@ class ContainerResource extends JsonResource
                 'identifier'      => $user->identifier,
                 'identifier_type' => $user->identifier_type,
                 'signed_at'       => $user->signed_at,
-                // TODO only for testing
-                'signature_page'  => "http://localhost:3000/signatures/$this->public_id/signer/$user->public_id"
             ];
         }
 
