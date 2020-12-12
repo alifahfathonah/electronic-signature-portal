@@ -33,12 +33,12 @@
       <v-card style="opacity: 0.95">
         <v-card-text class="pt-5">
           <div class="d-block" style="background-color: #eee">
-            <VueSignaturePad id="signature" ref="signaturePad" width="100%" height="240px" />
+            <VueSignaturePad id="signature" ref="signaturePad" width="100%" height="240px"/>
           </div>
         </v-card-text>
-        <v-divider />
+        <v-divider/>
         <v-card-actions>
-          <v-spacer />
+          <v-spacer/>
           <v-btn color="secondary" text @click="clearSignature">
             Clear
           </v-btn>
@@ -57,10 +57,12 @@ import Vue from 'vue'
 import pdf from 'vue-pdf'
 import VueSignature from 'vue-signature-pad'
 import Moveable from 'vue-moveable'
+
 Vue.use(VueSignature)
 
 export default {
   name: 'VisualSigning',
+  props: ['visualCoordinates'],
   components: { pdf, Moveable },
   data: () => ({
     widthRef: 210,
@@ -70,22 +72,55 @@ export default {
     signatureBox: null,
     placeholder: null,
     numPages: null,
-    document: null
+    document: null,
+    pdfPage: null
   }),
+  computed: {
+    signatureLocation () {
+      if (!pdfPage) {
+        return {
+          x: -12,
+          y: 0,
+          width: 100,
+          height: 100
+        }
+      }
+
+      const rect = pdfPage.getBoundingClientRect()
+
+      const xDpi = rect.width / this.widthRef
+      const yDpi = rect.height / this.heightRef
+
+      return {
+        x: xDpi * this.visualCoordinates.x - 12,
+        y: yDpi * this.visualCoordinates.y,
+        width: xDpi * this.visualCoordinates.width,
+        height: yDpi * this.visualCoordinates.height
+      }
+    }
+  },
   methods: {
-    async loadPdf(file, coords) {
+    pdfPage () {
+
+      return allPages[this.visualCoordinates.page - 1]
+    },
+    async loadPdf (file, coords) {
       this.counter = 0
       this.currentItem = null
       this.dragItems = []
       this.document = null
       console.log(file)
-      if(!file){
+      if (!file) {
         return
       }
 
       this.document = pdf.createLoadingTask('data:application/pdf;base64,' + file)
       this.document.promise.then((pdf) => {
         const viewer = document.querySelector('#pdf-viewer-outer')
+
+        const allPages = Array.from(document.body.querySelectorAll('.pdf-page')).map(v => v.getBoundingClientRect())
+        this.pdfPage = allPages[this.visualCoordinates.page]
+
         this.numPages = pdf.numPages
         this.signatureBox = {
           title: 'Sign here',
@@ -98,32 +133,33 @@ export default {
         this.$nextTick(() => {
           this.signPadDisabled = true
           // TODO: make calculations to find offset, don't forget -12px on x axis(hidden padding from vue-pdf)
-          this.$refs['signatureHolder'].request('draggable', { deltaX: -12, deltaY: 0 }, true)
+          this.$refs['signatureHolder'].request('draggable', { deltaX: this.signatureLocation.x, deltaY: this.signatureLocation.y }, true)
+          this.$refs['signatureHolder'].request('resizable', { offsetWidth: this.signatureLocation.width, offsetHeight: this.signatureLocation.height }, true)
           this.signPadDisabled = false
         })
       })
     },
     handleDrag ({ target, transform }) {
-      if(!this.signPadDisabled){
+      if (!this.signPadDisabled) {
         return
       }
       target.style.transform = transform
     },
-    async openDialogSignature() {
-      if(this.signPadDisabled){
+    async openDialogSignature () {
+      if (this.signPadDisabled) {
         return
       }
-      this.signPad = true;
-      await Vue.nextTick();
-      this.$refs.signaturePad.resizeCanvas();
+      this.signPad = true
+      await Vue.nextTick()
+      this.$refs.signaturePad.resizeCanvas()
     },
-    clearSignature (){
-      this.$refs.signaturePad.clearSignature();
+    clearSignature () {
+      this.$refs.signaturePad.clearSignature()
     },
-    saveSignature (){
-      this.signPad = false;
-      const { isEmpty, data } = this.$refs.signaturePad.saveSignature();
-      this.placeholder = data;
+    saveSignature () {
+      this.signPad = false
+      const { isEmpty, data } = this.$refs.signaturePad.saveSignature()
+      this.placeholder = data
     }
   }
 }
@@ -131,32 +167,36 @@ export default {
 
 <style scoped>
 
-#wrapper{
+#wrapper {
   background: #cdcdcd;
 }
-#pdf-viewer-outer{
+
+#pdf-viewer-outer {
   position: relative;
   max-height: 75vh;
   overflow-y: scroll;
   background: #f1f1f1;
   padding: 20px 0;
 }
-#pdf-viewer{
+
+#pdf-viewer {
   padding: 0 32px;
   min-height: 400px;
   min-width: 100%;
 }
-.moveable{
+
+.moveable {
   position: absolute;
   width: 160px;
   height: 100px;
   z-index: 1;
   text-align: center
 }
-.signature-header{
+
+.signature-header {
   position: absolute;
   left: 0;
-  top:0;
+  top: 0;
   right: 0;
   height: 80%;
   overflow: hidden;

@@ -75,8 +75,6 @@ class FilesController extends Controller
         $container->company_id     = $company->id;
         $container->save();
 
-        // TODO implement saving people
-
         if ($request->has('signers')) {
             foreach ($request->input('signers') as $signer) {
                 $containerSigner                         = new ContainerSigner();
