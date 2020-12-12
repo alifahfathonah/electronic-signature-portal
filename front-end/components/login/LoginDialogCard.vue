@@ -1,14 +1,14 @@
 <template>
   <v-card align="center">
     <v-card-title class="headline">
-      <v-spacer />
+      <v-spacer/>
       <template v-if="!method">
         Please log in
       </template>
       <template v-else>
         Logging in...
       </template>
-      <v-spacer />
+      <v-spacer/>
     </v-card-title>
     <v-card-text>
       <p v-if="!method">
@@ -16,7 +16,7 @@
       </p>
 
       <!-- Show login methods -->
-      <login-method-list v-if="!method" @selectMethod="selectMethod" />
+      <login-method-list v-if="!method" @selectMethod="selectMethod"/>
 
       <!-- Show ID card tip -->
       <template v-if="method === 'id-card'">
@@ -75,7 +75,7 @@
       <v-btn v-if="!!method" @click="reset">
         Back
       </v-btn>
-      <v-spacer />
+      <v-spacer/>
       <v-btn v-if="twoStepPromptingMoreInfo" color="primary" @click="beginTwoStepLogin">
         Next
       </v-btn>
@@ -169,9 +169,7 @@ export default {
           })
 
           if (response.data.status === 'OK') {
-            this.$store.commit('user/setMe', { me: response.data.user })
-            this.$toast('Logged in!', { color: 'success' })
-            this.$emit('loggedIn')
+            await this.$router.push('/select-company')
           } else {
             this.$toast(response.data.status, { color: 'error' })
             this.reset()
@@ -198,9 +196,7 @@ export default {
       }
 
       if (response.data.status === 'OK') {
-        this.$store.commit('user/setMe', { me: response.data.user })
-        this.$toast('Logged in!', { color: 'success' })
-        this.$emit('loggedIn')
+        await this.$router.push('/select-company')
       } else {
         this.$toast(response.data.status, { color: 'error' })
         this.reset()
@@ -231,9 +227,7 @@ export default {
         })
 
         if (response.data.status === 'OK') {
-          this.$store.commit('user/setMe', { me: response.data.user })
-          this.$toast('Logged in!', { color: 'success' })
-          this.$emit('loggedIn')
+          this.$store.commit('user/getMe')
         } else {
           this.$toast(response.data.status, { color: 'error' })
           this.reset()

@@ -23,7 +23,7 @@ class CompanyResource extends JsonResource
             $toArray['eid_client_id'] = $this->eid_client_id;
         }
         if ($this->eid_secret) {
-            $toArray['eid_secret'] = $this->anonymizeString($this->eid_secret);
+            $toArray['eid_secret'] = isset($this->eid_secret);
         }
 
         $toArray['role'] = $this->users()
@@ -34,20 +34,5 @@ class CompanyResource extends JsonResource
             ->pivot['role'];
 
         return $toArray;
-    }
-
-    private function anonymizeString(?string $string): ?string
-    {
-        if (!$string) {
-            return $string;
-        }
-        $length = strlen($string);
-        if ($length < 14) {
-            $secondPart = '';
-        } else {
-            $secondPart = substr($string, $length - 4);
-        }
-        $firstPart = str_repeat('*', $length - 4);
-        return $firstPart . $secondPart;
     }
 }
