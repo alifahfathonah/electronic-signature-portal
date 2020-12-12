@@ -25,6 +25,8 @@ Route::prefix('api')->group(function () {
 
     Route::get('/company/check-slug-availability', [CompanyController::class, 'checkUrlSlug']);
 
+    Route::get('/signatures/container({container:public_id}/files', [FilesController::class, 'getContainerFiles']);
+
     Route::post('/company', [CompanyController::class, 'store'])->middleware(['auth']);
 
     Route::put('/company/{company:url_slug}/', [CompanyController::class, 'update'])->middleware(['company.admin']);

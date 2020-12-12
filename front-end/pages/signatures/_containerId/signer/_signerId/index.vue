@@ -16,6 +16,19 @@
 
 <script>
 export default {
+  data () {
+    return {
+      files: []
+    }
+  },
+  created () {
+    this.$axios.$post(
+      `api/signatures/container/${this.$route.params.containerId}/signer/${this.$route.params.containerId}/files`, {
+        visual_signature: 'visual'
+      }).then((response) => {
+      this.files = response.data
+    })
+  },
   methods: {
     async submit () {
       await this.$axios.$post(

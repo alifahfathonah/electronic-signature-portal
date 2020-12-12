@@ -18,7 +18,10 @@ class ContainerResource extends JsonResource
     public function toArray($request)
     {
         /** @var $this SignatureContainer */
-        $data = parent::toArray($request);
+        $data = [
+            'container_type' => $this->container_type,
+            'public_id'      => $this->public_id,
+        ];
 //        $data['access_level'] = $this->signers->first(function (User $user) {
 //                return $user->id === Auth::id();
 //            })->pivot->access_level ?? SignatureContainer::LEVEL_SIGNER;
@@ -40,7 +43,9 @@ class ContainerResource extends JsonResource
             $signers[] = [
                 'identifier'      => $user->identifier,
                 'identifier_type' => $user->identifier_type,
-                'signed_at'       => $user->pivot->signed_at,
+                'signed_at'       => $user->signed_at,
+                // TODO only for testing
+                'signature_page'  => "http://localhost:3000/signatures/$this->public_id/signer/$user->public_id"
             ];
         }
 

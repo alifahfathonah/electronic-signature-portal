@@ -34,11 +34,6 @@ class SignatureContainer extends Model
     public const ACCESS_WHITELIST = "whitelist";
     public const ACCESS_PUBLIC = "public";
 
-    public function generatePath(): string
-    {
-        return "containers/$this->id/container-$this->id.$this->container_type";
-    }
-
     public function files()
     {
         return $this->hasMany(UnsignedFile::class);

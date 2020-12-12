@@ -14,7 +14,7 @@
           <h3>Access control</h3>
           <p>Who must sign this document?</p>
           <v-list>
-            <v-list-item v-for="(person, idx) in people" :key="person.idcode" inactive :ripple="false">
+            <v-list-item v-for="(person, idx) in signers" :key="person.idcode" inactive :ripple="false">
               <v-list-item-icon>
                 <v-icon>mdi-account</v-icon>
               </v-list-item-icon>
@@ -88,7 +88,7 @@ export default {
   name: 'VisualSignatureVue',
   data: () => ({
     file: null,
-    people: [],
+    signers: [],
     rules: {
       required: value => !!value || 'Required.',
       email: (value) => {
@@ -108,34 +108,35 @@ export default {
   methods: {
     addPerson () {
       const visualCoordinates = {
+        page: 1,
         x: 10.5,
         y: 30.7,
         width: 50,
         height: 10
       }
-      const newPerson = {
+      const newSigner = {
         identifier_type: 'email',
         identifier: this.newPersonIdentifier,
         access_level: 'signer',
         visual_coordinates: visualCoordinates
       }
-      if (!newPerson.identifier) {
-        this.$toast(`Please specify ${newPerson.identifier_type}.`, { color: 'error' })
+      if (!newSigner.identifier) {
+        this.$toast(`Please specify ${newSigner.identifier_type}.`, { color: 'error' })
         return
       }
-      const isDuplicate = this.people.some((p) => {
-        return newPerson.identifier === p.identifier
+      const isDuplicate = this.signers.some((p) => {
+        return newSigner.identifier === p.identifier
       })
       if (isDuplicate) {
         this.$toast('This person was already added.', { color: 'error' })
         return
       }
-      this.people.push(newPerson)
-      this.$toast('Person added: ' + newPerson.identifier)
+      this.signers.push(newSigner)
+      this.$toast('Person added: ' + newSigner.identifier)
       this.newPersonIdentifier = ''
     },
     removePerson (idx) {
-      this.people.splice(idx, 1)
+      this.signers.splice(idx, 1)
     },
     async submit () {
       const files = []
@@ -151,7 +152,7 @@ export default {
       })
 
       try {
-        const container = await this.$store.dispatch('container/uploadVisualSignature', { files, people: this.people })
+        const container = await this.$store.dispatch('container/uploadVisualSignature', { files, signers: this.signers })
 
         this.$router.push(`/signature/${container.public_id}`)
         this.$toast('Container created!', { color: 'success' })

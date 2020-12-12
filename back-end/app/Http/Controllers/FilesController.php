@@ -19,6 +19,23 @@ use Illuminate\Support\Str;
 
 class FilesController extends Controller
 {
+    public function getContainerFiles(Request $request, SignatureContainer $container)
+    {
+        $returnFiles = [];
+
+        // TODO check for file permissions
+        foreach ($container->files as $file) {
+            $returnFiles[] = [
+                'id'      => $file->id,
+                'name'    => $file->name,
+                'mime'    => $file->mime_type,
+                'content' => Storage::get($file->storagePath()),
+            ];
+        }
+
+        return response()->json($returnFiles);
+    }
+
     public function createSignatureContainer(CreateContainerRequest $request, Company $company)
     {
         DB::beginTransaction();
@@ -34,11 +51,13 @@ class FilesController extends Controller
         if ($request->has('signers')) {
             foreach ($request->input('signers') as $signer) {
                 $containerSigner                         = new ContainerSigner();
+                $containerSigner->public_id              = Str::random(20);
                 $containerSigner->identifier             = $signer['identifier'];
                 $containerSigner->identifier_type        = $signer['identifier_type'];
                 $containerSigner->country                = $signer['country'] ?? null;
                 $containerSigner->visual_coordinates     = $signer['visual_coordinates'] ?? null;
                 $containerSigner->signature_container_id = $container->id;
+                $containerSigner->save();
             }
         }
 
