@@ -100,10 +100,6 @@ export default {
     }
   },
   methods: {
-    pdfPage () {
-
-      return allPages[this.visualCoordinates.page - 1]
-    },
     async loadPdf (file, coords) {
       this.counter = 0
       this.currentItem = null
