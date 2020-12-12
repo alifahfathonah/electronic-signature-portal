@@ -13,6 +13,7 @@ This project was developed in Garage48 and as of this moment is not fully tested
 
 ## Developer workflow
 Wish to make changes to the codebase? There are several ways to set this project up on your dev environment. Here's the easiest one.
+Since this app uses browscap to detect browser and OS then you need to install it also if missing
 
 To set up the back-end:
 ```
@@ -21,6 +22,7 @@ To set up the back-end:
 
 cd back-end
 composer install
+vendor/bin/browscap-php browscap:update
 php artisan serve
 ```
 

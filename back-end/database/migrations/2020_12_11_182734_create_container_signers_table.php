@@ -22,6 +22,7 @@ class CreateContainerSignersTable extends Migration
             $table->string('identifier_type');
             $table->string('country')->nullable();
             $table->json('visual_coordinates')->nullable();
+            $table->dateTime('signed_at')->nullable();
             $table->timestamps();
         });
     }

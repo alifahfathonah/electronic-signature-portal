@@ -15,7 +15,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $identifier
  * @property string $identifier_type
  * @property string|null $country
- * @property mixed|null $visual_coordinates
+ * @property array|null $visual_coordinates
+ * @property array|null $activity_log
+ * @property \Illuminate\Support\Carbon|null $signed_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  */
@@ -23,5 +25,8 @@ class ContainerSigner extends Model
 {
     use HasFactory;
 
-    protected $casts = ['visual_coordinates' => 'array'];
+    protected $casts = [
+        'visual_coordinates' => 'array',
+        'activity_log'       => 'array',
+    ];
 }

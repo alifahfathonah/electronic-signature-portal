@@ -18,7 +18,7 @@ class ContainerResource extends JsonResource
     public function toArray($request)
     {
         /** @var $this SignatureContainer */
-        $data                 = parent::toArray($request);
+        $data = parent::toArray($request);
 //        $data['access_level'] = $this->signers->first(function (User $user) {
 //                return $user->id === Auth::id();
 //            })->pivot->access_level ?? SignatureContainer::LEVEL_SIGNER;
@@ -36,17 +36,13 @@ class ContainerResource extends JsonResource
 
         $signers = [];
 
-//        foreach ($this->signers as $user) {
-//            $signers[] = [
-//                'id'           => $user->id,
-//                'country'      => $user->country,
-//                'first_name'   => $user->first_name,
-//                'last_name'    => $user->last_name,
-//                'idcode'       => $user->idcode,
-//                'access_level' => $user->pivot->access_level,
-//                'signed_at'    => $user->pivot->signed_at,
-//            ];
-//        }
+        foreach ($this->signers as $user) {
+            $signers[] = [
+                'identifier'      => $user->identifier,
+                'identifier_type' => $user->identifier_type,
+                'signed_at'       => $user->pivot->signed_at,
+            ];
+        }
 
         $data['signers'] = $signers;
 
@@ -61,10 +57,7 @@ class ContainerResource extends JsonResource
      */
     public static function collection($resource)
     {
-        $resource->load(['users' => function ($userQ) {
-            $userQ->where('users.id', Auth::id())->selectRaw('1');
-        }]);
-        $resource->load('files');
+        $resource->load(['files', 'signers']);
         return parent::collection($resource);
     }
 }

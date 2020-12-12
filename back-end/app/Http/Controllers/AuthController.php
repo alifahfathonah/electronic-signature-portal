@@ -24,14 +24,9 @@ class AuthController extends Controller
     {
         $companies = Auth::check() ? $companyService->getUserCompanies(Auth::id()) : collect([]);
 
-        $containers = Auth::check()
-            ? $containerService->getUserContainers(Auth::id())
-            : new Collection;
-
         return response()->json([
             'user'       => Auth::user(),
             'companies'  => CompanyResource::collection($companies),
-            'containers' => ContainerResource::collection($containers),
         ]);
     }
 

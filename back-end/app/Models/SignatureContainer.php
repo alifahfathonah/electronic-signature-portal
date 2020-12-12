@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
  * @property string|null $container_path
  * @property string $public_id
  * @property UnsignedFile[]|Collection $files
- * @property User[]|Collection $users
+ * @property ContainerSigner[]|Collection $signers
  * @property string $company_id
  * @property Company $company
  * @property \Illuminate\Support\Carbon|null $created_at
