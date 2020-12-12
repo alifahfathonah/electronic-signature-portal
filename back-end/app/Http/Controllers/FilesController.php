@@ -5,35 +5,57 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Container\CreateContainerRequest;
 use App\Http\Requests\Container\DownloadFileRequest;
 use App\Http\Resources\ContainerResource;
+use App\Mail\SignatureRequested;
 use App\Models\Company;
 use App\Models\ContainerSigner;
 use App\Models\SignatureContainer;
 use App\Models\UnsignedFile;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class FilesController extends Controller
 {
-    public function getContainerFiles(Request $request, SignatureContainer $container)
+    public function getContainerAndSigner(Request $request, SignatureContainer $container, ContainerSigner $signer)
     {
-        $returnFiles = [];
+        if ($signer->signature_container_id !== $container->id) {
+            abort(404, 'Invalid signer for this container');
+        }
 
         // TODO check for file permissions
+        $returnFiles = [];
         foreach ($container->files as $file) {
             $returnFiles[] = [
                 'id'      => $file->id,
                 'name'    => $file->name,
                 'mime'    => $file->mime_type,
-                'content' => Storage::get($file->storagePath()),
+                'content' => base64_encode(Storage::get($file->storagePath())),
             ];
         }
 
-        return response()->json($returnFiles);
+        return response()->json([
+            'files'  => $returnFiles,
+            'signer' => $signer->only(['identifier', 'identifier_type', 'visual_coordinates', 'country']),
+        ]);
+    }
+
+    public function getContainerFiles(Request $request, SignatureContainer $container)
+    {
+        // TODO check for file permissions
+        $returnFiles = [];
+        foreach ($container->files as $file) {
+            $returnFiles[] = [
+                'id'      => $file->id,
+                'name'    => $file->name,
+                'mime'    => $file->mime_type,
+                'content' => base64_encode(Storage::get($file->storagePath())),
+            ];
+        }
+
+        return response()->json(['files' => $returnFiles]);
     }
 
     public function createSignatureContainer(CreateContainerRequest $request, Company $company)
@@ -58,6 +80,11 @@ class FilesController extends Controller
                 $containerSigner->visual_coordinates     = $signer['visual_coordinates'] ?? null;
                 $containerSigner->signature_container_id = $container->id;
                 $containerSigner->save();
+                if ($containerSigner->identifier_type === "email") {
+                    info("Sending notification e-mail to " . $containerSigner->identifier);
+                    $url = env('APP_URL') . "/signatures/container/$container->public_id/signer/$containerSigner->public_id";
+                    Mail::to($containerSigner->identifier)->send(new SignatureRequested($url));
+                }
             }
         }
 

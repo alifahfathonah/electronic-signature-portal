@@ -23,7 +23,7 @@ export default {
   },
   created () {
     this.$axios.$post(
-      `api/signatures/container/${this.$route.params.containerId}/signer/${this.$route.params.containerId}/files`, {
+      `api/signatures/container/${this.$route.params.containerId}/signer/${this.$route.params.signerId}/files`, {
         visual_signature: 'visual'
       }).then((response) => {
       this.files = response.data
@@ -32,7 +32,7 @@ export default {
   methods: {
     async submit () {
       await this.$axios.$post(
-        `api/signatures/container/${this.$route.params.containerId}/signer/${this.$route.params.containerId}/visual-sign`, {
+        `api/signatures/container/${this.$route.params.containerId}/signer/${this.$route.params.signerId}/visual-sign`, {
           visual_signature: 'visual'
         })
     }
