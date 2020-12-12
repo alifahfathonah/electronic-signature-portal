@@ -115,7 +115,7 @@ export default {
         const viewer = document.querySelector('#pdf-viewer-outer')
 
         const allPages = Array.from(document.body.querySelectorAll('.pdf-page')).map(v => v.getBoundingClientRect())
-        this.pdfPage = allPages[this.visualCoordinates.page]
+        this.pdfPage = allPages[this.visualCoordinates.page-1]
 
         this.numPages = pdf.numPages
         this.signatureBox = {
