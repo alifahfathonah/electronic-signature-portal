@@ -14,7 +14,6 @@ export const actions = {
     if (response.user) {
       commit('setMe', { me: response.user })
       commit('company/setCompanies', { companies: response.companies }, { root: true })
-      commit('container/setContainers', { containers: response.containers }, { root: true })
     }
   }
 }

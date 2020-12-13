@@ -221,7 +221,7 @@ export default {
       try {
         const container = await this.$store.dispatch('container/uploadFiles', { files, people: this.people })
 
-        this.$router.push(`/signature/${container.public_id}`)
+        this.$router.push(`/signatures/${container.public_id}`)
         this.$toast('Container created!', { color: 'success' })
       } catch (e) {}
     },

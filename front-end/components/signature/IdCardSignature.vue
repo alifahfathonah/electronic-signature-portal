@@ -39,7 +39,7 @@ export default {
 
         console.log('Got response from eID Easy ID card iFrame', event.data)
         if (event.data.operation === 'getCertificate') {
-          this.digestResponse = await this.$axios.post('api/signatures/get-signature-digest', {
+          this.digestResponse = await this.$axios.post(`api/signatures/container/${this.$route.params.containerId}/get-signature-digest`, {
             certificate: event.data.certificate,
             container_id: this.$route.params.fileid
           })
@@ -47,7 +47,7 @@ export default {
           console.log('Digest received', this.digestResponse)
           this.iFrame.contentWindow.postMessage({ operation: 'getSignature', hexDigest: this.digestResponse.data.hexDigest, lang: 'en' }, eidEasyUrl)
         } else if (event.data.operation === 'getSignature') {
-          this.$axios.post('api/signatures/finish-signature', {
+          this.$axios.post(`api/signatures/container/${this.$route.params.containerId}/finish-signature`, {
             doc_id: this.digestResponse.data.doc_id,
             signature_value: event.data.signature_value
           }).then(() => alert('signature completed'))

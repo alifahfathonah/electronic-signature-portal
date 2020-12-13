@@ -31,7 +31,7 @@
           </p>
           <file-list :files="container.files" :container-id="container.public_id" />
           <signature-methods @signWithSmartId="signWithSmartId" />
-          <signee-list v-if="container.users.length" :people="container.users" />
+          <signee-list v-if="container.users && container.users.length" :people="container.users" />
           <template v-if="$route.query.signed">
             <br>
             <h3>Signed container</h3>

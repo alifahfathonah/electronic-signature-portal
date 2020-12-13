@@ -38,9 +38,9 @@ Route::prefix('api')->group(function () {
     Route::get('/container/{container_id}', [FilesController::class, 'getContainerInfo'])->middleware(['container.can-read']);
     Route::get('/container/{container_id}/download', [FilesController::class, 'downloadFile'])->middleware(['container.can-read']);
 
-    Route::post('signatures/get-idcard-token', 'SignatureController@getIdcardToken');
-    Route::post('signatures/get-signature-digest', 'SignatureController@getSignatureDigest');
-    Route::post('signatures/finish-signature', 'SignatureController@finishSignature');
+    Route::post('signatures/get-idcard-token', [SignatureController::class, 'getIdcardToken']);
+    Route::post('signatures/container/{container:public_id}/get-signature-digest', [SignatureController::class, 'getSignatureDigest']);
+    Route::post('signatures/container/{container:public_id}/finish-signature', [SignatureController::class, 'finishSignature']);
     Route::post('signatures/container/{container:public_id}/signer/{signer:public_id}/visual-sign', [SignatureController::class, 'applyVisualSignature']);
 
     Route::prefix('authenticate')->group(function () {

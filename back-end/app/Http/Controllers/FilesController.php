@@ -171,7 +171,6 @@ XML;
         $manifest  = simplexml_load_string($manifestTemplate);
         $namespace = 'urn:oasis:names:tc:opendocument:xmlns:manifest:1.0';
 
-
         foreach ($request->input('files') as $fileData) {
             // Store file.
             $unsignedFile = new UnsignedFile();
@@ -182,12 +181,12 @@ XML;
             $unsignedFile->signature_container_id = $container->id;
             $unsignedFile->name                   = $name;
 
-            $storagePath                = $unsignedFile->storagePath();
+            $storagePath = $unsignedFile->storagePath();
+            Storage::put($storagePath, $fileContent);
+
             $unsignedFile->storage_path = $storagePath;
             $unsignedFile->size         = Storage::size($storagePath);
             $unsignedFile->mime_type    = $fileData['mime'];
-
-            Storage::put($storagePath, $fileContent);
 
             $unsignedFile->save();
             $zip->addFromString($name, $fileContent);
@@ -195,7 +194,7 @@ XML;
             // Add file metadata to container manifest.xml.
             $newFileEntry = $manifest->addChild('file-entry');
             $newFileEntry->addAttribute('manifest:full-path', $name, $namespace);
-            $xmlMime = str_replace("/", "-", $fileData['mime']);
+            $xmlMime = $fileData['mime'];
             $newFileEntry->addAttribute('manifest:media-type', $xmlMime, $namespace);
         }
 
